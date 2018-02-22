@@ -1,0 +1,30 @@
+<?php
+return array(
+    'minbbs'=>array(
+        '[hug]'=>array('title'=>'拥抱','emotion'=>'拥抱','filename'=>'hug.gif'),
+        '[kiss]'=>array('title'=>'示爱','emotion'=>'示爱','filename'=>'kiss.gif'),
+        '[lol]'=>array('title'=>'呲牙','emotion'=>'呲牙','filename'=>'lol.gif'),
+        '[loveliness]'=>array('title'=>'可爱','emotion'=>'可爱','filename'=>'loveliness.gif'),
+        '[mad]'=>array('title'=>'折磨','emotion'=>'折磨','filename'=>'mad.gif'),
+        '[sad]'=>array('title'=>'难过','emotion'=>'难过','filename'=>'sad.gif'),
+        '[sweat]'=>array('title'=>'流汗','emotion'=>'流汗','filename'=>'sweat.gif'),
+        '[biggrin]'=>array('title'=>'憨笑','emotion'=>'憨笑','filename'=>'biggrin.gif'),
+        '[cry]'=>array('title'=>'大哭','emotion'=>'大哭','filename'=>'cry.gif'),
+        '[handshake]'=>array('title'=>'握手','emotion'=>'握手','filename'=>'handshake.gif'),
+        '[huffy]'=>array('title'=>'发怒','emotion'=>'发怒','filename'=>'huffy.gif'),
+        '[shocked]'=>array('title'=>'惊讶','emotion'=>'惊讶','filename'=>'shocked.gif'),
+        '[shy]'=>array('title'=>'害羞','emotion'=>'害羞','filename'=>'shy.gif'),
+        '[smile]'=>array('title'=>'微笑','emotion'=>'微笑','filename'=>'smile.gif'),
+        '[笑脸]'=>array('title'=>'微笑','emotion'=>'微笑','filename'=>'weixiao.gif'),
+        '[titter]'=>array('title'=>'偷笑','emotion'=>'偷笑','filename'=>'titter.gif'),
+        '[tongue]'=>array('title'=>'调皮','emotion'=>'调皮','filename'=>'tongue.gif'),
+        '[beer]'=>array('title'=>'啤酒','emotion'=>'啤酒','filename'=>'beer.gif'),
+        '[cake]'=>array('title'=>'蛋糕','emotion'=>'蛋糕','filename'=>'cake.gif'),
+        '[fendou]'=>array('title'=>'奋斗','emotion'=>'奋斗','filename'=>'fendou.gif'),
+        '[ha]'=>array('title'=>'哈欠','emotion'=>'哈欠','filename'=>'ha.gif'),
+        '[moon]'=>array('title'=>'晚安','emotion'=>'晚安','filename'=>'moon.gif'),
+        '[pig]'=>array('title'=>'猪头','emotion'=>'猪头','filename'=>'pig.gif'),
+        '[yun]'=>array('title'=>'晕','emotion'=>'晕','filename'=>'yun.gif'),
+        '[ok]'=>array('title'=>'OK','emotion'=>'OK','filename'=>'ok.gif'),        
+    )
+);
