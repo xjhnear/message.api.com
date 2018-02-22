@@ -18,27 +18,9 @@ use Illuminate\Support\Facades\Response;
 
 Route::pattern('symbol', '[\/]?');
 
-/*-------------------------------系统-----------------------------*/
-//检查更新√
-Route::any('app/upgrade{symbol}',array('before'=>'uri_verify','uses'=>'AppController@upGrade'));
-
-/*-------------------------------用户-------------------------------*/
-//登录√
-Route::any('user/login{symbol}',array('before'=>'uri_verify','uses'=>'UserController@login'));
-//注册、忘记密码、更换绑定手机
-Route::any('user/register{symbol}',array('uses'=>'UserController@register'));
-//意见反馈
-Route::any('user/feedback{symbol}',array('before'=>'uri_verify','uses'=>'UserController@feedback'));
-//获取用户信息
-Route::any('user/info{symbol}',array('before'=>'uri_verify','uses'=>'UserController@info'));
-//用户资料编辑
-Route::any('user/edit{symbol}',array('before'=>'uri_verify','uses'=>'UserController@edit'));
-//首页获取用户状态
-Route::any('user/identification{symbol}',array('before'=>'uri_verify','uses'=>'UserController@identification'));
-//认证--上传视频
-Route::any('user/identify',array('uses'=>'UserController@identify'));
-//更新认证结果
-Route::any('user/identifyrefresh',array('uses'=>'UserController@identifyRefresh'));
+/*-------------------------------接口-----------------------------*/
+//非法关键词查询
+Route::any('api/checkkeyword{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@checkkeyword'));
 
 //获取验证码
 Route::any('sms/verify{symbol}',array('before'=>'uri_verify','uses'=>'UserController@smsVerify'));
