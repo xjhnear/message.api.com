@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Input;
 use Youxiduo\System\MessageService;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
+use Youxiduo\System\Model\MessageSend;
 
 class SystemController extends BaseController
 {
@@ -13,7 +14,7 @@ class SystemController extends BaseController
 	public function sms()
 	{
 		$search['message_id'] = Input::get('message_id');
-		$search['message_id'] = 9;
+		if (!$search['message_id']) return Response::json(array());
 		$pageSize = 2000;
 		$data_list = MessageList::getInfoById($search['message_id']);
 		$data_list['content'] = json_decode($data_list['content'],true);
@@ -69,7 +70,36 @@ class SystemController extends BaseController
 			'action'=>'query'
 		);
 		$r = $this->unifySend('statusApi', $params);
+//		$r1 = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
+//		$r2 = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
 
+		if (isset($r['statusbox'])) {
+			if (isset($r['statusbox']['mobile'])) {
+				$data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
+				if ($data_send) {
+					$input = array();
+					$input['message_sid'] = $data_send['message_sid'];
+					$input['status'] = $r['statusbox']['status'];
+					$input['return_time'] = strtotime($r['statusbox']['receivetime']);
+					$input['errorcode'] = $r['statusbox']['errorcode'];
+					$input['extno'] = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
+					MessageSend::save($input);
+				}
+			} else {
+				foreach ($r['statusbox'] as $item) {
+					$data_send = MessageSend::getInfo($item['mobile'],$item['taskid']);
+					if ($data_send) {
+						$input = array();
+						$input['message_sid'] = $data_send['message_sid'];
+						$input['status'] = $item['status'];
+						$input['return_time'] = strtotime($item['receivetime']);
+						$input['errorcode'] = $item['errorcode'];
+						$input['extno'] = is_array($item['extno'])?'':$item['extno'];
+						MessageSend::save($input);
+					}
+				}
+			}
+		}
 		return Response::json($r);
 	}
 

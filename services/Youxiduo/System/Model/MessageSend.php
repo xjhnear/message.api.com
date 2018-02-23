@@ -24,6 +24,12 @@ final class MessageSend extends Model implements IModel
 		return __CLASS__;
 	}
 
+	public static function getInfo($phonenumber,$task_id)
+	{
+		$info = self::db()->where('phonenumber','=',$phonenumber)->where('task_id','=',$task_id)->where('status','=',0)->orderBy('message_sid','asc')->first();
+		return $info;
+	}
+
 	public static function save($data)
 	{
 		if(isset($data['message_sid']) && $data['message_sid']){
