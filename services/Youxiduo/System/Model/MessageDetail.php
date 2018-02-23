@@ -40,4 +40,16 @@ final class MessageDetail extends Model implements IModel
 		return $tb->count();
 	}
 
+	public static function save($data)
+	{
+		if(isset($data['message_did']) && $data['message_did']){
+			$message_did = $data['message_did'];
+			unset($data['message_did']);
+			return self::db()->where('message_did','=',$message_did)->update($data);
+		}else{
+			unset($data['message_did']);
+			return self::db()->insertGetId($data);
+		}
+	}
+
 }

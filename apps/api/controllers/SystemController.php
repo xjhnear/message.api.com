@@ -69,9 +69,9 @@ class SystemController extends BaseController
 		$params = array(
 			'action'=>'query'
 		);
-		$r = $this->unifySend('statusApi', $params);
-//		$r1 = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
-//		$r2 = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
+//		$r = $this->unifySend('statusApi', $params);
+		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
+//		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
 
 		if (isset($r['statusbox'])) {
 			if (isset($r['statusbox']['mobile'])) {
@@ -84,6 +84,15 @@ class SystemController extends BaseController
 					$input['errorcode'] = $r['statusbox']['errorcode'];
 					$input['extno'] = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
 					MessageSend::save($input);
+					$input_d = array();
+					$input_d['message_did'] = $data_send['message_did'];
+					$input_d['return_time'] = time();
+					if ($r['statusbox']['status'] == 10) {
+						$input_d['status'] = 3;
+					} else {
+						$input_d['status'] = 4;
+					}
+					MessageDetail::save($input_d);
 				}
 			} else {
 				foreach ($r['statusbox'] as $item) {
@@ -96,6 +105,15 @@ class SystemController extends BaseController
 						$input['errorcode'] = $item['errorcode'];
 						$input['extno'] = is_array($item['extno'])?'':$item['extno'];
 						MessageSend::save($input);
+						$input_d = array();
+						$input_d['message_did'] = $data_send['message_did'];
+						$input_d['return_time'] = time();
+						if ($item['status'] == 10) {
+							$input_d['status'] = 3;
+						} else {
+							$input_d['status'] = 4;
+						}
+						MessageDetail::save($input_d);
 					}
 				}
 			}
