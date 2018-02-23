@@ -62,6 +62,11 @@ class SystemController extends BaseController
 					$sql = str_replace('[TASKID]', $task_id, $sql);
 					$sql = substr($sql,0,-1);   //去除最后的逗号
 					DB::insert($sql);
+
+                    $input_l = array();
+                    $input_l['message_id'] = $search['message_id'];
+                    $input_l['status'] = 3;
+                    MessageList::save($input_l);
 				}
 			}
 		}
@@ -101,7 +106,6 @@ class SystemController extends BaseController
 						$input_d['status'] = 4;
 					}
 					MessageDetail::save($input_d);
-					self::checkListStatus($data_send['message_id']);
 				}
 			} else {
 				foreach ($r['statusbox'] as $item) {
@@ -123,7 +127,6 @@ class SystemController extends BaseController
 							$input_d['status'] = 4;
 						}
 						MessageDetail::save($input_d);
-						self::checkListStatus($data_send['message_id']);
 					}
 				}
 			}
