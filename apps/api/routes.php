@@ -22,8 +22,13 @@ Route::pattern('symbol', '[\/]?');
 //非法关键词查询
 Route::any('api/checkkeyword{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@checkkeyword'));
 
-//获取验证码
-Route::any('sms/verify{symbol}',array('before'=>'uri_verify','uses'=>'UserController@smsVerify'));
+
+/*-------------------------------系统-----------------------------*/
+//短信发送
+Route::any('system/sms{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@sms'));
+
+//状态报告
+Route::any('system/status{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@status'));
 
 /*
 App::missing(function($exception){
