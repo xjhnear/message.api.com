@@ -21,7 +21,7 @@ class SystemController extends BaseController
 		$input_l['status'] = 5;
 		MessageList::save($input_l);
 		$data_list = MessageList::getInfoById($search['message_id']);
-		$data_list['content'] = json_decode($data_list['content'],true);
+		$data_list['content'] = json_decode($data_list['content_json'],true);
 		$content_arr['1'] =  $data_list['content']['unicom'];
 		$content_arr['2'] =  ($data_list['content']['mobile']<>'')?$data_list['content']['mobile']:$data_list['content']['unicom'];
 		$content_arr['3'] =  ($data_list['content']['telecom']<>'')?$data_list['content']['telecom']:$data_list['content']['unicom'];
