@@ -52,4 +52,22 @@ final class MessageDetail extends Model implements IModel
 		}
 	}
 
+	public static function getAllCount($message_id)
+	{
+		$count = self::db()->where('message_id','=',$message_id)->count();
+		return $count;
+	}
+
+	public static function getSuccessCount($message_id)
+	{
+		$count = self::db()->where('message_id','=',$message_id)->where('status','=',3)->count();
+		return $count;
+	}
+
+	public static function getfailCount($message_id)
+	{
+		$count = self::db()->where('message_id','=',$message_id)->where('status','=',4)->count();
+		return $count;
+	}
+
 }

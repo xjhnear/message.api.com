@@ -30,4 +30,16 @@ final class MessageList extends Model implements IModel
 		return $info;
 	}
 
+	public static function save($data)
+	{
+		if(isset($data['message_id']) && $data['message_id']){
+			$message_id = $data['message_id'];
+			unset($data['message_id']);
+			return self::db()->where('message_id','=',$message_id)->update($data);
+		}else{
+			unset($data['message_id']);
+			return self::db()->insertGetId($data);
+		}
+	}
+
 }

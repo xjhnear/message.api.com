@@ -16,6 +16,10 @@ class SystemController extends BaseController
 		$search['message_id'] = Input::get('message_id');
 		if (!$search['message_id']) return Response::json(array());
 		$pageSize = 2000;
+		$input_l = array();
+		$input_l['message_id'] = $search['message_id'];
+		$input_l['status'] = 5;
+		MessageList::save($input_l);
 		$data_list = MessageList::getInfoById($search['message_id']);
 		$data_list['content'] = json_decode($data_list['content'],true);
 		$content_arr['1'] =  $data_list['content']['unicom'];
@@ -36,6 +40,10 @@ class SystemController extends BaseController
 					foreach ($data_detail as $item) {
 						$message_did_arr[] = $item['message_did'];
 						$phonenumber_arr[] = $item['phonenumber'];
+						$input_d = array();
+						$input_d['message_did'] = $item['message_did'];
+						$input_d['status'] = 5;
+						MessageDetail::save($input_d);
 						$tmpstr = "'". $search['message_id'] ."','". $item['message_did'] ."','". $item['phonenumber'] ."','[TASKID]','". $operator ."','". $item['channel_id'] ."'";
 						$sql .= "(".$tmpstr."),";
 					}
@@ -69,8 +77,8 @@ class SystemController extends BaseController
 		$params = array(
 			'action'=>'query'
 		);
-//		$r = $this->unifySend('statusApi', $params);
-		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
+		$r = $this->unifySend('statusApi', $params);
+//		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
 //		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
 
 		if (isset($r['statusbox'])) {
@@ -93,6 +101,7 @@ class SystemController extends BaseController
 						$input_d['status'] = 4;
 					}
 					MessageDetail::save($input_d);
+					self::checkListStatus($data_send['message_id']);
 				}
 			} else {
 				foreach ($r['statusbox'] as $item) {
@@ -114,11 +123,29 @@ class SystemController extends BaseController
 							$input_d['status'] = 4;
 						}
 						MessageDetail::save($input_d);
+						self::checkListStatus($data_send['message_id']);
 					}
 				}
 			}
 		}
 		return Response::json($r);
+	}
+
+	protected function checkListStatus($message_id)
+	{
+		$count = MessageDetail::getAllCount($message_id);
+		$count_success =  MessageDetail::getSuccessCount($message_id);
+		$count_fail =  MessageDetail::getfailCount($message_id);
+		if ($count_success + $count_fail = $count) {
+			$input_l = array();
+			$input_l['message_id'] = $message_id;
+			if ($count_success > 0) {
+				$input_l['status'] = 3;
+			} else {
+				$input_l['status'] = 4;
+			}
+			MessageList::save($input_l);
+		}
 	}
 
 	protected function unifySend($action,$params)
