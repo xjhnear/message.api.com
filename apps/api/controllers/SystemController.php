@@ -5,6 +5,7 @@ use Youxiduo\System\MessageService;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
 use Youxiduo\System\Model\MessageSend;
+use Youxiduo\System\Model\Channel;
 
 class SystemController extends BaseController
 {
@@ -36,15 +37,16 @@ class SystemController extends BaseController
 					$data_detail = array();
 					$data_detail = MessageDetail::getList($search,$pageIndex,$pageSize);
 					$message_did_arr = $phonenumber_arr = array();
-					$sql="INSERT INTO yii2_message_send (message_id,message_did,phonenumber,task_id,operator,channel_id) VALUES";
+					$sql="INSERT INTO yii2_message_send (message_id,message_did,phonenumber,task_id,operator,channel_id,create_time,uid) VALUES";
 					foreach ($data_detail as $item) {
+						$channel_id = $item['channel_id'];
 						$message_did_arr[] = $item['message_did'];
 						$phonenumber_arr[] = $item['phonenumber'];
 						$input_d = array();
 						$input_d['message_did'] = $item['message_did'];
 						$input_d['status'] = 5;
 						MessageDetail::save($input_d);
-						$tmpstr = "'". $search['message_id'] ."','". $item['message_did'] ."','". $item['phonenumber'] ."','[TASKID]','". $operator ."','". $item['channel_id'] ."'";
+						$tmpstr = "'". $search['message_id'] ."','". $item['message_did'] ."','". $item['phonenumber'] ."','[TASKID]','". $operator ."','". $item['channel_id'] ."','". time() ."','". $item['create_uid'] ."'";
 						$sql .= "(".$tmpstr."),";
 					}
 					$message_dids = implode(',',$message_did_arr);
@@ -57,7 +59,11 @@ class SystemController extends BaseController
 						'sendTime'=>$sendTime,
 						'extno'=>$extno
 					);
-					$r = $this->unifySend('sms', $params);
+					$channel_item = Channel::getInfo($channel_id);
+					if (!$channel_item) {
+						continue;
+					}
+					$r = $this->unifySend('sms', $params, $channel_item);
 					$task_id = $r['taskID'];
 					$sql = str_replace('[TASKID]', $task_id, $sql);
 					$sql = substr($sql,0,-1);   //去除最后的逗号
@@ -79,54 +85,57 @@ class SystemController extends BaseController
 	 */
 	public function status()
 	{
-		$params = array(
-			'action'=>'query'
-		);
-		$r = $this->unifySend('statusApi', $params);
+		$channel_list = Channel::getList();
+		foreach ($channel_list as $channel_item) {
+			$params = array(
+				'action'=>'query'
+			);
+			$r = $this->unifySend('statusApi', $params, $channel_item);
 //		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
 //		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
 
-		if (isset($r['statusbox'])) {
-			if (isset($r['statusbox']['mobile'])) {
-				$data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
-				if ($data_send) {
-					$input = array();
-					$input['message_sid'] = $data_send['message_sid'];
-					$input['status'] = $r['statusbox']['status'];
-					$input['return_time'] = strtotime($r['statusbox']['receivetime']);
-					$input['errorcode'] = $r['statusbox']['errorcode'];
-					$input['extno'] = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
-					MessageSend::save($input);
-					$input_d = array();
-					$input_d['message_did'] = $data_send['message_did'];
-					$input_d['return_time'] = time();
-					if ($r['statusbox']['status'] == 10) {
-						$input_d['status'] = 3;
-					} else {
-						$input_d['status'] = 4;
-					}
-					MessageDetail::save($input_d);
-				}
-			} else {
-				foreach ($r['statusbox'] as $item) {
-					$data_send = MessageSend::getInfo($item['mobile'],$item['taskid']);
+			if (isset($r['statusbox'])) {
+				if (isset($r['statusbox']['mobile'])) {
+					$data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
 					if ($data_send) {
 						$input = array();
 						$input['message_sid'] = $data_send['message_sid'];
-						$input['status'] = $item['status'];
-						$input['return_time'] = strtotime($item['receivetime']);
-						$input['errorcode'] = $item['errorcode'];
-						$input['extno'] = is_array($item['extno'])?'':$item['extno'];
+						$input['status'] = $r['statusbox']['status'];
+						$input['return_time'] = strtotime($r['statusbox']['receivetime']);
+						$input['errorcode'] = $r['statusbox']['errorcode'];
+						$input['extno'] = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
 						MessageSend::save($input);
 						$input_d = array();
 						$input_d['message_did'] = $data_send['message_did'];
 						$input_d['return_time'] = time();
-						if ($item['status'] == 10) {
+						if ($r['statusbox']['status'] == 10) {
 							$input_d['status'] = 3;
 						} else {
 							$input_d['status'] = 4;
 						}
 						MessageDetail::save($input_d);
+					}
+				} else {
+					foreach ($r['statusbox'] as $item) {
+						$data_send = MessageSend::getInfo($item['mobile'],$item['taskid']);
+						if ($data_send) {
+							$input = array();
+							$input['message_sid'] = $data_send['message_sid'];
+							$input['status'] = $item['status'];
+							$input['return_time'] = strtotime($item['receivetime']);
+							$input['errorcode'] = $item['errorcode'];
+							$input['extno'] = is_array($item['extno'])?'':$item['extno'];
+							MessageSend::save($input);
+							$input_d = array();
+							$input_d['message_did'] = $data_send['message_did'];
+							$input_d['return_time'] = time();
+							if ($item['status'] == 10) {
+								$input_d['status'] = 3;
+							} else {
+								$input_d['status'] = 4;
+							}
+							MessageDetail::save($input_d);
+						}
 					}
 				}
 			}
@@ -151,12 +160,16 @@ class SystemController extends BaseController
 		}
 	}
 
-	protected function unifySend($action,$params)
+	protected function unifySend($action,$params, $channel_item)
 	{
-		$url = 'http://139.196.58.248:5577/'.$action.'.aspx';
-		$userid = '8710';
-		$account = '借鸿移动贷款';
-		$password = 'a123456';
+//		$url = 'http://139.196.58.248:5577/'.$action.'.aspx';
+//		$userid = '8710';
+//		$account = '借鸿移动贷款';
+//		$password = 'a123456';
+		$url = $channel_item['url'].'/'.$action.'.aspx';
+		$userid = $channel_item['userid'];
+		$account = $channel_item['account'];
+		$password = $channel_item['password'];
 
 		$params['userid'] = $userid;
 		$params['account'] = $account;
