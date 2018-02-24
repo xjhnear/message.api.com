@@ -29,6 +29,7 @@ final class MessageDetail extends Model implements IModel
 		$tb = self::db();
 		if(isset($search['message_id']) && !empty($search['message_id'])) $tb = $tb->where('message_id','=',$search['message_id']);
 		if(isset($search['operator']) && !empty($search['operator'])) $tb = $tb->where('operator','=',$search['operator']);
+		if(isset($search['status']) && !empty($search['status'])) $tb = $tb->where('status','=',$search['status']);
 		return $tb->orderBy('message_did','desc')->forPage($pageIndex,$pageSize)->get();
 	}
 
@@ -37,6 +38,7 @@ final class MessageDetail extends Model implements IModel
 		$tb = self::db();
 		if(isset($search['message_id']) && !empty($search['message_id'])) $tb = $tb->where('message_id','=',$search['message_id']);
 		if(isset($search['operator']) && !empty($search['operator'])) $tb = $tb->where('operator','=',$search['operator']);
+		if(isset($search['status']) && !empty($search['status'])) $tb = $tb->where('status','=',$search['status']);
 		return $tb->count();
 	}
 

@@ -28,8 +28,10 @@ class SystemController extends BaseController
 		$content_arr['3'] =  ($data_list['content']['telecom']<>'')?$data_list['content']['telecom']:$data_list['content']['unicom'];
 		$sendTime = date('Y-m-d H:i:s', $data_list['send_time']);
 		$extno = '';
+		$count_all = 0;
 		for ($operator=1; $operator<=3; $operator++) {
 			$search['operator'] = $operator;
+			$search['status'] = 1;
 			$count = MessageDetail::getCount($search);
 			if ($count>0) {
 				$page = ceil($count/$pageSize);
@@ -64,18 +66,25 @@ class SystemController extends BaseController
 						continue;
 					}
 					$r = $this->unifySend('sms', $params, $channel_item);
+					if ($r['returnstatus'] == 'Faild') {
+						continue;
+					}
+					$count_all += $count;
 					$task_id = $r['taskID'];
 					$sql = str_replace('[TASKID]', $task_id, $sql);
 					$sql = substr($sql,0,-1);   //去除最后的逗号
 					DB::insert($sql);
-
-                    $input_l = array();
-                    $input_l['message_id'] = $search['message_id'];
-                    $input_l['status'] = 3;
-                    MessageList::save($input_l);
 				}
 			}
 		}
+		$input_l = array();
+		$input_l['message_id'] = $search['message_id'];
+		if ($count_all > 0) {
+			$input_l['status'] = 3;
+		} else {
+			$input_l['status'] = 4;
+		}
+		MessageList::save($input_l);
 
 		return Response::json($r);
 	}
