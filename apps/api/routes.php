@@ -22,6 +22,14 @@ Route::pattern('symbol', '[\/]?');
 //非法关键词查询
 Route::any('api/checkkeyword{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@checkkeyword'));
 
+//发送
+Route::any('api/sms{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@sms'));
+
+//余额及已发送量查询
+Route::any('api/overage{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@overage'));
+
+//状态报告
+Route::any('api/status{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@status'));
 
 /*-------------------------------系统-----------------------------*/
 //短信发送
@@ -29,6 +37,9 @@ Route::any('system/sms{symbol}',array('before'=>'uri_verify','uses'=>'SystemCont
 
 //状态报告
 Route::any('system/status{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@status'));
+
+//日报
+Route::any('system/report{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@report'));
 
 /*
 App::missing(function($exception){

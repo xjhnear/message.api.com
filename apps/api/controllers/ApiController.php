@@ -2,34 +2,25 @@
 use Yxd\Modules\Core\CacheService;
 use Illuminate\Support\Facades\Input;
 use Youxiduo\Api\AdminService;
+use Youxiduo\Api\model\Admin;
 
 class ApiController extends BaseController
 {
 	/**
 	 * 非法关键词查询
 	 */
-	public function send()
-	{
-		$mobile = Input::get('mobile');
-		$content = Input::get('content');
-		$sendTime = Input::get('sendTime');
-		$extno = Input::get('extno');
-		$params = array(
-			'action'=>'send',
-			'mobile'=>$mobile,
-			'content'=>$content,
-			'sendTime'=>$sendTime,
-			'extno'=>$extno
-		);
-		$r = $this->unifySend('sms', $params);
-
-		return Response::json($r);
-	}
-	/**
-	 * 非法关键词查询
-	 */
 	public function checkkeyword()
 	{
+	    print_r(crypt('123456', 'SbSY36BLw3V2lU-GB7ZAzCVJKDFx82IJ'));exit;
+        $account = Input::get('account');
+        $password = Input::get('password');
+        $user = Admin::checkPassword($account,'username',$password);
+        if (!$user) {
+            $r['error'] = 100;
+            $r['remark'] = '用户名密码错误';
+            return Response::json($r);
+        }
+        print_r($user);exit;
 		$content = Input::get('content');
 		$params = array(
 			'action'=>'checkkeyword',

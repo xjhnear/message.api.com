@@ -12,6 +12,7 @@ namespace Youxiduo\System\Model;
 
 use Youxiduo\Base\Model;
 use Youxiduo\Base\IModel;
+use Illuminate\Support\Facades\DB;
 
 use Youxiduo\Helper\Utility;
 /**
@@ -42,4 +43,19 @@ final class MessageSend extends Model implements IModel
 		}
 	}
 
+    public static function getListToday()
+    {
+        $start = mktime(0,0,0,date("m"),date("d"),date("Y"));
+        $end = mktime(0,0,0,date("m"),date("d")+1,date("Y"));
+        $info = self::db()->select(DB::raw('count(*) as count, uid'))->whereBetween('create_time', [$start, $end])->groupBy('uid')->get();
+        return $info;
+    }
+
+    public static function getSuccessListToday()
+    {
+        $start = mktime(0,0,0,date("m"),date("d"),date("Y"));
+        $end = mktime(0,0,0,date("m"),date("d")+1,date("Y"));
+        $info = self::db()->select(DB::raw('count(*) as count, uid'))->whereBetween('create_time', [$start, $end])->where('status','=',10)->groupBy('uid')->get();
+        return $info;
+    }
 }

@@ -31,7 +31,7 @@ final class Admin extends Model implements IModel
 	{
 		if(!in_array($identify_field,array('uid','username'))) return false;
 		$user = self::db();
-		$user = $user->where($identify_field,'=',$identify)->where('password','=',$password)->where('status','=',1)->where('is_del','=',0)->where('role','=',1);
+		$user = $user->where($identify_field,'=',$identify)->where('password','=',password_hash($password, 1, ['cost' => 13]))->where('status','=',1)->where('is_del','=',0)->where('role','=',1);
 		$user = $user->first();
 		return $user;
 	}

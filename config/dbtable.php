@@ -7,6 +7,9 @@ $v4_tables = array(
     'youxiduo_system_model_messagedetail'=>array('db'=>'www','table'=>'message_detail'),
     'youxiduo_system_model_messagelist'=>array('db'=>'www','table'=>'message_list'),
     'youxiduo_system_model_channel'=>array('db'=>'www','table'=>'channel'),
+    'youxiduo_system_model_account'=>array('db'=>'www','table'=>'account'),
+    'youxiduo_system_model_accountdetail'=>array('db'=>'www','table'=>'account_detail'),
+    'youxiduo_system_model_report'=>array('db'=>'www','table'=>'report'),
 
 );
 return $v4_tables;
