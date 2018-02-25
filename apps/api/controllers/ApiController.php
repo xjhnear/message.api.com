@@ -11,25 +11,36 @@ class ApiController extends BaseController
 	 */
 	public function checkkeyword()
 	{
-	    print_r(crypt('123456', 'SbSY36BLw3V2lU-GB7ZAzCVJKDFx82IJ'));exit;
         $account = Input::get('account');
         $password = Input::get('password');
-        $user = Admin::checkPassword($account,'username',$password);
-        if (!$user) {
-            $r['error'] = 100;
-            $r['remark'] = '用户名密码错误';
-            return Response::json($r);
-        }
-        print_r($user);exit;
+        $this->checkPassword($account,$password);
 		$content = Input::get('content');
 		$params = array(
 			'action'=>'checkkeyword',
 			'content'=>$content
 		);
 		$r = $this->unifySend('sms', $params);
+        $out = array();
+        if ($r['returnstatus'] == 'Faild') {
+            $out['error'] = 100;
+            $out['message'] = $r['message'];
+            $out['content'] = $r['checkCounts'];
+        } else {
+            $out['error'] = 0;
+            $out['message'] = $r['message'];
+            $out['content'] = $r['checkCounts'];
+        }
 
-		return Response::json($r);
+		return Response::json($out);
 	}
+
+    /**
+     * 发送
+     */
+    public function sms()
+    {
+
+    }
 
 	protected function unifySend($action,$params)
 	{
@@ -80,5 +91,17 @@ class ApiController extends BaseController
 		$val = json_decode(json_encode($xmlstring),true);
 		return $val;
 	}
+
+    protected function checkPassword($account,$password){
+
+        return true;
+        $user = Admin::checkPassword($account,'username',$password);
+        if (!$user) {
+            $r['error'] = 100;
+            $r['remark'] = '用户名密码错误';
+            return Response::json($r);
+        }
+        return true;
+    }
 
 }

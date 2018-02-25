@@ -231,8 +231,8 @@ class SystemController extends BaseController
      */
     public function report()
     {
-        $start = mktime(0,0,0,date("m"),date("d"),date("Y"));
-        $end = mktime(0,0,0,date("m"),date("d")+1,date("Y"));
+        $start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
+        $end = mktime(0,0,0,date("m"),date("d"),date("Y"));
         $c_date = date('Y-m-d');
         $sql="select a.uid,IFNULL(count,0) as count,IFNULL(count_success,0) as count_success from yii2_admin as a 
 LEFT JOIN
