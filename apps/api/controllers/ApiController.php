@@ -15,13 +15,6 @@ class ApiController extends BaseController
 	 */
 	public function checkkeyword()
 	{
-        $sql = 'SELECT * FROM yii2_admin WHERE username = "test" AND status=1 AND is_del=0';
-        $info = DB::select($sql);
-//        $info = Admin::getInfo('test');
-        print_r($info);exit;
-        $check = password_verify($password,$info['password']);
-
-
         $account = Input::get('account');
         $password = Input::get('password');
         $info = $this->checkPassword($account,$password);
@@ -289,7 +282,8 @@ class ApiController extends BaseController
 
     protected function checkPassword($account,$password){
 
-        $info = Admin::getInfo($account);
+        $sql = 'SELECT * FROM yii2_admin WHERE username = "'.$account.'" AND status=1 AND is_del=0';
+        $info = DB::select($sql);
         $check = password_verify($password,$info['password']);
         if (!$check) {
             return false;
