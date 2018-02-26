@@ -6,6 +6,7 @@ use Youxiduo\Api\model\Admin;
 use Youxiduo\System\model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
+use Youxiduo\System\Model\AccountDetail;
 
 class ApiController extends BaseController
 {
@@ -155,11 +156,26 @@ class ApiController extends BaseController
             $input_d['operator'] = $operator_code;
             $input_d['create_uid'] = $info['uid'];
             MessageDetail::save($input_d);
+
+            $cost = $count * $info['coefficient'];
+            $input_u = array();
+            $input_u['balance'] = $info['balance'] - $cost;
+            Admin::save($input_d);
+
+            $input_ad = array();
+            $input_ad['uid'] = $info['uid'];
+            $input_ad['change_count'] = $cost;
+            $input_ad['change_type'] = 2;
+            $input_ad['balance'] = $input_u['balance'];
+            $input_ad['remark'] = '消耗';
+            $input_ad['op_uid'] = $info['uid'];
+            AccountDetail::save($input_d);
+
         }
 
         $out['error'] = 0;
         $out['message'] = 'success';
-        
+
         return Response::json($out);
     }
 

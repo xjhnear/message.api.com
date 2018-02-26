@@ -42,6 +42,18 @@ final class Admin extends Model implements IModel
         return $info;
     }
 
+    public static function save($data)
+    {
+        if(isset($data['uid']) && $data['uid']){
+            $uid = $data['uid'];
+            unset($data['uid']);
+            return self::db()->where('uid','=',$uid)->update($data);
+        }else{
+            unset($data['uid']);
+            return self::db()->insertGetId($data);
+        }
+    }
+
 	/**
 	 * 获取用户信息
 	 * @param $uid
