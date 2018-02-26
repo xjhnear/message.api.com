@@ -13,7 +13,7 @@ return array(
 	|
 	*/
 
-	'debug' => false,
+	'debug' => true,
     'openlog'=>true,
     'firephp'=>true,
     'close_cache' => true,
