@@ -12,7 +12,6 @@ namespace Youxiduo\System\Model;
 
 use Youxiduo\Base\Model;
 use Youxiduo\Base\IModel;
-use Illuminate\Support\Facades\DB;
 
 use Youxiduo\Helper\Utility;
 /**
@@ -27,9 +26,7 @@ final class Admin extends Model implements IModel
 
     public static function getInfo($username)
     {
-//        $info = self::db()->where('username','=',$username)->where('is_del','=',0)->where('status','=',1)->orderBy('uid','asc')->first();
-        $info = DB::connection('www')->table('admin')
-            ->where('admin.username','=',$username)->where('admin.is_del','=',0)->where('admin.status','=',1)->first();
+        $info = self::db()->where('username','=',$username)->where('is_del','=',0)->where('status','=',1)->orderBy('uid','asc')->first();
         return $info;
     }
 
