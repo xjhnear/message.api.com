@@ -174,6 +174,7 @@ class ApiController extends BaseController
             $input_ad['balance'] = $input_u['balance'];
             $input_ad['remark'] = '消耗';
             $input_ad['op_uid'] = $info['uid'];
+            $input_ad['create_time'] = time();
             AccountDetail::save($input_ad);
 
         }
