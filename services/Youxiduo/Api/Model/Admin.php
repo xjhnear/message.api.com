@@ -19,21 +19,9 @@ use Youxiduo\Helper\Utility;
  */
 final class Admin extends Model implements IModel
 {
-	const IDENTIFY_FIELD_UID      = 'uid';
-	const IDENTIFY_FIELD_USERNAME   = 'username';
-
 	public static function getClassName()
 	{
 		return __CLASS__;
-	}
-
-	public static function checkPassword($identify,$identify_field,$password)
-	{
-		if(!in_array($identify_field,array('uid','username'))) return false;
-		$user = self::db();
-		$user = $user->where($identify_field,'=',$identify)->where('password','=',password_hash($password, 1, ['cost' => 13]))->where('status','=',1)->where('is_del','=',0)->where('role','=',1);
-		$user = $user->first();
-		return $user;
 	}
 
     public static function getInfo($username)
