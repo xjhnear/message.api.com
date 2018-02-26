@@ -15,14 +15,19 @@ class ApiController extends BaseController
 	 */
 	public function checkkeyword()
 	{
+        $info = Admin::getInfo('test');
+        print_r($info);exit;
+        $check = password_verify($password,$info['password']);
+
+
         $account = Input::get('account');
         $password = Input::get('password');
-//        $info = $this->checkPassword($account,$password);
-//        if (!$info) {
-//            $r['error'] = 100;
-//            $r['remark'] = '用户名密码错误';
-//            return Response::json($r);
-//        }
+        $info = $this->checkPassword($account,$password);
+        if (!$info) {
+            $r['error'] = 100;
+            $r['remark'] = '用户名密码错误';
+            return Response::json($r);
+        }
 		$content = Input::get('content');
 		$params = array(
 			'action'=>'checkkeyword',
