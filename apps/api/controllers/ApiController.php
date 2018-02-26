@@ -159,6 +159,7 @@ class ApiController extends BaseController
 
             $cost = $count * $info['coefficient'];
             $input_u = array();
+            $input_u['uid'] = $info['uid'];
             $input_u['balance'] = $info['balance'] - $cost;
             Admin::save($input_u);
 
