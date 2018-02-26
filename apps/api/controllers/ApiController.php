@@ -160,7 +160,7 @@ class ApiController extends BaseController
             $cost = $count * $info['coefficient'];
             $input_u = array();
             $input_u['balance'] = $info['balance'] - $cost;
-            Admin::save($input_d);
+            Admin::save($input_u);
 
             $input_ad = array();
             $input_ad['uid'] = $info['uid'];
@@ -169,7 +169,7 @@ class ApiController extends BaseController
             $input_ad['balance'] = $input_u['balance'];
             $input_ad['remark'] = '消耗';
             $input_ad['op_uid'] = $info['uid'];
-            AccountDetail::save($input_d);
+            AccountDetail::save($input_ad);
 
         }
 
