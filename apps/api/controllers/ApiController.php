@@ -1,13 +1,15 @@
 <?php
-use Yxd\Modules\Core\CacheService;
+use Yxd\Modules\Core\BackendController;
 use Illuminate\Support\Facades\Input;
-use Youxiduo\Api\AdminService;
+use Illuminate\Support\Facades\Paginator;
+
 use Youxiduo\System\Model\Admin;
 use Youxiduo\System\Model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
 use Youxiduo\System\Model\AccountDetail;
-use Redis;
+//use Redis;
+use Illuminate\Support\Facades\DB;
 
 class ApiController extends BaseController
 {
