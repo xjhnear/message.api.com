@@ -17,12 +17,12 @@ class ApiController extends BaseController
 	{
         $account = Input::get('account');
         $password = Input::get('password');
-        $info = $this->checkPassword($account,$password);
-        if (!$info) {
-            $r['error'] = 100;
-            $r['remark'] = '用户名密码错误';
-            return Response::json($r);
-        }
+//        $info = $this->checkPassword($account,$password);
+//        if (!$info) {
+//            $r['error'] = 100;
+//            $r['remark'] = '用户名密码错误';
+//            return Response::json($r);
+//        }
 		$content = Input::get('content');
 		$params = array(
 			'action'=>'checkkeyword',
