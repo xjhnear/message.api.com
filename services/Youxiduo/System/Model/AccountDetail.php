@@ -41,7 +41,7 @@ final class AccountDetail extends Model implements IModel
         if(isset($data['account_did']) && $data['account_did']){
             $account_did = $data['account_did'];
             unset($data['account_did']);
-            return self::db()->where('account_did','=',$account_did->update($data);
+            return self::db()->where('account_did','=',$account_did)->update($data);
         }else{
             unset($data['account_did']);
             return self::db()->insertGetId($data);
