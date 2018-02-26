@@ -7,6 +7,7 @@ use Youxiduo\System\Model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
 use Youxiduo\System\Model\AccountDetail;
+use Redis;
 
 class ApiController extends BaseController
 {
