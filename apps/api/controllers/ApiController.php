@@ -49,6 +49,7 @@ class ApiController extends BaseController
      */
     public function sms()
     {
+        print_r(Redis::get("isp_1391743"));exit;
         $account = Input::get('account');
         $password = Input::get('password');
         $info = $this->checkPassword($account,$password);
