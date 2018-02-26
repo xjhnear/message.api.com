@@ -95,7 +95,7 @@ class ApiController extends BaseController
             }
             $phone_number_show = array_merge($phone_number_arr['unicom'],$phone_number_arr['mobile'],$phone_number_arr['telecom'],$phone_number_arr['other']);
         }
-
+print_r($phone_number_show);exit;
         $count = count($phone_number_show);
         $rest = floor($info['balance']/$info['coefficient']);
         if ($count > $rest) {
