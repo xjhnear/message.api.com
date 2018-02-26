@@ -58,7 +58,7 @@ use ReflectionClass;
 use ReflectionParameter;
 class BindingResolutionException extends \Exception
 {
-    
+
 }
 class Container implements ArrayAccess
 {
@@ -1626,7 +1626,7 @@ class Request
                 \Locale::setDefault($locale);
             }
         } catch (\Exception $e) {
-            
+
         }
     }
     private function getUrlencodedPrefix($string, $prefix)
@@ -2685,7 +2685,7 @@ class MetadataBag implements SessionBagInterface
     }
     public function clear()
     {
-        
+
     }
     public function getName()
     {
@@ -2707,12 +2707,12 @@ namespace Symfony\Component\HttpFoundation\Session\Storage\Handler;
 if (version_compare(phpversion(), '5.4.0', '>=')) {
     class NativeSessionHandler extends \SessionHandler
     {
-        
+
     }
 } else {
     class NativeSessionHandler
     {
-        
+
     }
 }
 namespace Symfony\Component\HttpFoundation\Session\Storage\Proxy;
@@ -2851,8 +2851,8 @@ class AcceptHeaderItem
         $string = $this->value . ($this->quality < 1 ? ';q=' . $this->quality : '');
         if (count($this->attributes) > 0) {
             $string .= ';' . implode(';', array_map(function ($name, $value) {
-                return sprintf(preg_match('/[,;=]/', $value) ? '%s="%s"' : '%s=%s', $name, $value);
-            }, array_keys($this->attributes), $this->attributes));
+                    return sprintf(preg_match('/[,;=]/', $value) ? '%s="%s"' : '%s=%s', $name, $value);
+                }, array_keys($this->attributes), $this->attributes));
         }
         return $string;
     }
@@ -3176,7 +3176,7 @@ abstract class ServiceProvider
     }
     public function boot()
     {
-        
+
     }
     public abstract function register();
     public function package($package, $namespace = null, $path = null)
@@ -3709,7 +3709,7 @@ class ErrorHandler
             return;
         }
         $exceptionHandler = set_exception_handler(function () {
-            
+
         });
         restore_exception_handler();
         if (is_array($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler) {
@@ -3725,7 +3725,7 @@ namespace Symfony\Component\HttpKernel\Debug;
 use Symfony\Component\Debug\ErrorHandler as DebugErrorHandler;
 class ErrorHandler extends DebugErrorHandler
 {
-    
+
 }
 namespace Illuminate\Config;
 
@@ -4024,7 +4024,7 @@ use FilesystemIterator;
 use Symfony\Component\Finder\Finder;
 class FileNotFoundException extends \Exception
 {
-    
+
 }
 class Filesystem
 {
@@ -6298,7 +6298,7 @@ abstract class Model implements ArrayAccess, ArrayableInterface, JsonableInterfa
     {
         $format = $this->getDateFormat();
         if ($value instanceof DateTime) {
-            
+
         } elseif (is_numeric($value)) {
             $value = Carbon::createFromTimestamp($value);
         } elseif (preg_match('/^(\\d{4})-(\\d{2})-(\\d{2})$/', $value)) {
@@ -6984,7 +6984,7 @@ namespace Illuminate\Encryption;
 
 class DecryptException extends \RuntimeException
 {
-    
+
 }
 class Encrypter
 {
@@ -7436,7 +7436,7 @@ abstract class AbstractHandler implements HandlerInterface
     }
     public function close()
     {
-        
+
     }
     public function pushProcessor($callback)
     {
@@ -7488,7 +7488,7 @@ abstract class AbstractHandler implements HandlerInterface
         try {
             $this->close();
         } catch (\Exception $e) {
-            
+
         }
     }
     protected function getDefaultFormatter()
