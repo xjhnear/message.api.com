@@ -51,7 +51,6 @@ class ApiController extends BaseController
      */
     public function sms()
     {
-        print_r(Redis::get("isp_1391743"));exit;
         $account = Input::get('account');
         $password = Input::get('password');
         $info = $this->checkPassword($account,$password);
@@ -65,44 +64,43 @@ class ApiController extends BaseController
         $sendTime = Input::get('sendTime');
 
         $mobile_arr = explode(',', $mobile);
-        $phone_number_arr = $phone_number_show = array();
-        $phone_number_arr['unicom'] = $phone_number_arr['mobile'] = $phone_number_arr['telecom'] = $phone_number_arr['other'] = array();
+//        $phone_number_arr = $phone_number_show = array();
+//        $phone_number_arr['unicom'] = $phone_number_arr['mobile'] = $phone_number_arr['telecom'] = $phone_number_arr['other'] = array();
+//
+//        foreach ($mobile_arr as $item_phonenumber) {
+//            $phone_number_7 =  substr($item_phonenumber,0,7);
+//            if (Redis::exists("isp_".$phone_number_7)) {
+//                $operator = Redis::get("isp_".$phone_number_7);
+//            } else {
+//                $operator = '';
+//            }
+//            switch ($operator) {
+//                case "联通":
+//                    $phone_number_arr['unicom'][] = $item_phonenumber;
+//                    break;
+//                case "移动":
+//                    $phone_number_arr['mobile'][] = $item_phonenumber;
+//                    break;
+//                case "电信":
+//                    $phone_number_arr['telecom'][] = $item_phonenumber;
+//                    break;
+//                case "虚拟/联通":
+//                    $phone_number_arr['unicom'][] = $item_phonenumber;
+//                    break;
+//                case "虚拟/移动":
+//                    $phone_number_arr['mobile'][] = $item_phonenumber;
+//                    break;
+//                case "虚拟/电信":
+//                    $phone_number_arr['telecom'][] = $item_phonenumber;
+//                    break;
+//                default:
+//                    $phone_number_arr['other'][] = $item_phonenumber;
+//                    break;
+//            }
+//            $phone_number_show = array_merge($phone_number_arr['unicom'],$phone_number_arr['mobile'],$phone_number_arr['telecom'],$phone_number_arr['other']);
+//        }
 
-        foreach ($mobile_arr as $item_phonenumber) {
-            $phone_number_7 =  substr($item_phonenumber,0,7);
-            if (Redis::exists("isp_".$phone_number_7)) {
-                $operator = Redis::get("isp_".$phone_number_7);
-            } else {
-                $operator = '';
-            }
-            print_r($operator);exit;
-            switch ($operator) {
-                case "联通":
-                    $phone_number_arr['unicom'][] = $item_phonenumber;
-                    break;
-                case "移动":
-                    $phone_number_arr['mobile'][] = $item_phonenumber;
-                    break;
-                case "电信":
-                    $phone_number_arr['telecom'][] = $item_phonenumber;
-                    break;
-                case "虚拟/联通":
-                    $phone_number_arr['unicom'][] = $item_phonenumber;
-                    break;
-                case "虚拟/移动":
-                    $phone_number_arr['mobile'][] = $item_phonenumber;
-                    break;
-                case "虚拟/电信":
-                    $phone_number_arr['telecom'][] = $item_phonenumber;
-                    break;
-                default:
-                    $phone_number_arr['other'][] = $item_phonenumber;
-                    break;
-            }
-            $phone_number_show = array_merge($phone_number_arr['unicom'],$phone_number_arr['mobile'],$phone_number_arr['telecom'],$phone_number_arr['other']);
-        }
-
-        $count = count($phone_number_show);
+        $count = count($mobile_arr);
         $rest = floor($info['balance']/$info['coefficient']);
         if ($count > $rest) {
             $r['error'] = 100;
@@ -112,8 +110,8 @@ class ApiController extends BaseController
 
         $input = array();
         $input['message_code'] = 'M'.time();
-        $input['phonenumbers'] = implode(',',$phone_number_show);
-        $input['phonenumbers_json'] = json_encode($phone_number_arr);
+        $input['phonenumbers'] = $mobile;
+        $input['phonenumbers_json'] = '';
         $input['count'] = $count;
         $input['content'] = $content;
         $input['content_json'] = json_encode(array('unicom'=>$content,'mobile'=>'','telecom'=>''));
@@ -124,42 +122,42 @@ class ApiController extends BaseController
         $message_id = MessageList::save($input);
 
         foreach ($mobile_arr as $item_phonenumber) {
-            $phone_number_7 =  substr($item_phonenumber,0,7);
-            if (Redis::exists("isp_".$phone_number_7)) {
-                $operator = Redis::get("isp_".$phone_number_7);
-            } else {
-                $operator = '';
-            }
-            switch ($operator) {
-                case "联通":
-                    $operator_code = 1;
-                    break;
-                case "移动":
-                    $operator_code = 2;
-                    break;
-                case "电信":
-                    $operator_code = 3;
-                    break;
-                case "虚拟/联通":
-                    $operator_code = 1;
-                    break;
-                case "虚拟/移动":
-                    $operator_code = 2;
-                    break;
-                case "虚拟/电信":
-                    $operator_code = 3;
-                    break;
-                default:
-                    $operator_code = 4;
-                    break;
-            }
+//            $phone_number_7 =  substr($item_phonenumber,0,7);
+//            if (Redis::exists("isp_".$phone_number_7)) {
+//                $operator = Redis::get("isp_".$phone_number_7);
+//            } else {
+//                $operator = '';
+//            }
+//            switch ($operator) {
+//                case "联通":
+//                    $operator_code = 1;
+//                    break;
+//                case "移动":
+//                    $operator_code = 2;
+//                    break;
+//                case "电信":
+//                    $operator_code = 3;
+//                    break;
+//                case "虚拟/联通":
+//                    $operator_code = 1;
+//                    break;
+//                case "虚拟/移动":
+//                    $operator_code = 2;
+//                    break;
+//                case "虚拟/电信":
+//                    $operator_code = 3;
+//                    break;
+//                default:
+//                    $operator_code = 4;
+//                    break;
+//            }
             $input_d = array();
             $input_d['phonenumber'] = $item_phonenumber;
             $input_d['message_id'] = $message_id;
             $input_d['message_code'] = $input['message_code'];
             $input_d['content'] = $content;
             $input_d['send_time'] = $sendTime;
-            $input_d['operator'] = $operator_code;
+//            $input_d['operator'] = $operator_code;
             $input_d['create_uid'] = $info['uid'];
             MessageDetail::save($input_d);
 
