@@ -43,6 +43,18 @@ final class MessageSend extends Model implements IModel
 		}
 	}
 
+    public static function getList($task_id)
+    {
+        $info = self::db()->where('task_id','=',$task_id)->orderBy('message_sid','asc')->get();
+        return $info;
+    }
+
+    public static function getCount($uid)
+    {
+        $info = self::db()->where('uid','=',$uid)->orderBy('message_sid','asc')->count();
+        return $info;
+    }
+
     public static function getListToday()
     {
         $start = mktime(0,0,0,date("m"),date("d"),date("Y"));

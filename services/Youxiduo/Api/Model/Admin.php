@@ -36,6 +36,12 @@ final class Admin extends Model implements IModel
 		return $user;
 	}
 
+    public static function getInfo($username)
+    {
+        $info = self::db()->where('username','=',$username)->where('is_del','=',0)->where('status','=',1)->orderBy('uid','asc')->first();
+        return $info;
+    }
+
 	/**
 	 * 获取用户信息
 	 * @param $uid
