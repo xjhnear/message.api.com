@@ -284,6 +284,9 @@ class ApiController extends BaseController
 
         $sql = 'SELECT * FROM yii2_admin WHERE username = "'.$account.'" AND status=1 AND is_del=0';
         $info = DB::select($sql);
+        if (!$info) {
+            return false;
+        }
         $check = password_verify($password,$info['password']);
         if (!$check) {
             return false;
