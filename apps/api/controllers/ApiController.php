@@ -2,7 +2,7 @@
 use Yxd\Modules\Core\CacheService;
 use Illuminate\Support\Facades\Input;
 use Youxiduo\Api\AdminService;
-use Youxiduo\Api\model\Admin;
+use Youxiduo\System\model\Admin;
 use Youxiduo\System\model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
