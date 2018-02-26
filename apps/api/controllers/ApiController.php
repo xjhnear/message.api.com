@@ -287,6 +287,7 @@ class ApiController extends BaseController
         if (!$info) {
             return false;
         }
+        $info = $info[0];
         $check = password_verify($password,$info['password']);
         if (!$check) {
             return false;
