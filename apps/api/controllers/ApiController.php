@@ -63,7 +63,7 @@ class ApiController extends BaseController
         $mobile_arr = explode(',', $mobile);
         $phone_number_arr = $phone_number_show = array();
         $phone_number_arr['unicom'] = $phone_number_arr['mobile'] = $phone_number_arr['telecom'] = $phone_number_arr['other'] = array();
-        print_r($mobile_arr);exit;
+
         foreach ($mobile_arr as $item_phonenumber) {
             $phone_number_7 =  substr($item_phonenumber,0,7);
             if (Redis::exists("isp_".$phone_number_7)) {
@@ -71,6 +71,7 @@ class ApiController extends BaseController
             } else {
                 $operator = '';
             }
+            print_r($operator);exit;
             switch ($operator) {
                 case "联通":
                     $phone_number_arr['unicom'][] = $item_phonenumber;
