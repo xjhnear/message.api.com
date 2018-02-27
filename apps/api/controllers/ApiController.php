@@ -76,11 +76,11 @@ class ApiController extends BaseController
 //                $operator = '';
 //            }
             $sql = 'SELECT isp FROM yii2_phone_model WHERE phone = "'.$phone_number_7.'"';
-            $info = DB::select($sql);
-            if (!$info) {
+            $info_pn = DB::select($sql);
+            if (!$info_pn) {
                 $operator = '';
             } else {
-                $operator = $info[0]['isp'];
+                $operator = $info_pn[0]['isp'];
             }
             switch ($operator) {
                 case "联通":
@@ -137,11 +137,11 @@ class ApiController extends BaseController
 //                $operator = '';
 //            }
             $sql = 'SELECT isp FROM yii2_phone_model WHERE phone = "'.$phone_number_7.'"';
-            $info = DB::select($sql);
-            if (!$info) {
+            $info_pn = DB::select($sql);
+            if (!$info_pn) {
                 $operator = '';
             } else {
-                $operator = $info[0]['isp'];
+                $operator = $info_pn[0]['isp'];
             }
             switch ($operator) {
                 case "联通":
