@@ -283,6 +283,11 @@ class ApiController extends BaseController
             return Response::json($r);
         }
         $data_list = MessageSend::getList($message_id);
+        if (!$data_list) {
+            $r['error'] = 100;
+            $r['remark'] = '当前没有待查询的短信状态';
+            return Response::json($r);
+        }
         $status_arr = array();
         foreach ($data_list as $item) {
             $status_arr = array();
