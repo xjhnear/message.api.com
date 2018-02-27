@@ -21,10 +21,15 @@ class ApiController extends BaseController
 	{
         $account = Input::get('account');
         $password = Input::get('password');
+        if ($account=="" || $password=="") {
+            $r['error'] = 100;
+            $r['remark'] = '用户名或密码不能为空';
+            return Response::json($r);
+        }
         $info = $this->checkPassword($account,$password);
         if (!$info) {
             $r['error'] = 100;
-            $r['remark'] = '用户名密码错误';
+            $r['remark'] = '用户名或密码错误';
             return Response::json($r);
         }
 		$content = Input::get('content');
@@ -54,16 +59,41 @@ class ApiController extends BaseController
     {
         $account = Input::get('account');
         $password = Input::get('password');
+        if ($account=="" || $password=="") {
+            $r['error'] = 100;
+            $r['remark'] = '用户名或密码不能为空';
+            return Response::json($r);
+        }
         $info = $this->checkPassword($account,$password);
         if (!$info) {
             $r['error'] = 100;
-            $r['remark'] = '用户名密码错误';
+            $r['remark'] = '用户名或密码错误';
             return Response::json($r);
         }
         $mobile = Input::get('mobile');
         $content = Input::get('content');
         $sendTime = Input::get('sendTime');
-
+        if ($mobile=="") {
+            $r['error'] = 100;
+            $r['remark'] = '短信号码不能为空';
+            return Response::json($r);
+        }
+        if ($content=="") {
+            $r['error'] = 100;
+            $r['remark'] = '短信内容不能为空';
+            return Response::json($r);
+        }
+        $params = array(
+            'action'=>'checkkeyword',
+            'content'=>$content
+        );
+        $r = $this->unifySend('sms', $params);
+        $out = array();
+        if ($r['returnstatus'] == 'Faild') {
+            $r['error'] = 100;
+            $r['remark'] = '包含非法字符';
+            return Response::json($r);
+        }
         $mobile_arr = explode(',', $mobile);
         $phone_number_arr = $phone_number_show = array();
         $phone_number_arr['unicom'] = $phone_number_arr['mobile'] = $phone_number_arr['telecom'] = $phone_number_arr['other'] = array();
@@ -209,10 +239,15 @@ class ApiController extends BaseController
     {
         $account = Input::get('account');
         $password = Input::get('password');
+        if ($account=="" || $password=="") {
+            $r['error'] = 100;
+            $r['remark'] = '用户名或密码不能为空';
+            return Response::json($r);
+        }
         $info = $this->checkPassword($account,$password);
         if (!$info) {
             $r['error'] = 100;
-            $r['remark'] = '用户名密码错误';
+            $r['remark'] = '用户名或密码错误';
             return Response::json($r);
         }
         $out['error'] = 0;
@@ -230,15 +265,24 @@ class ApiController extends BaseController
     {
         $account = Input::get('account');
         $password = Input::get('password');
+        if ($account=="" || $password=="") {
+            $r['error'] = 100;
+            $r['remark'] = '用户名或密码不能为空';
+            return Response::json($r);
+        }
         $info = $this->checkPassword($account,$password);
         if (!$info) {
             $r['error'] = 100;
-            $r['remark'] = '用户名密码错误';
+            $r['remark'] = '用户名或密码错误';
             return Response::json($r);
         }
-        $task_id = Input::get('message_id');
-        $message_code = Input::get('message_code');
-        $data_list = MessageSend::getList($task_id,$message_code);
+        $message_id = Input::get('message_id');
+        if ($message_id=="") {
+            $r['error'] = 100;
+            $r['remark'] = '短信ID不能为空';
+            return Response::json($r);
+        }
+        $data_list = MessageSend::getList($message_id);
         $status_arr = array();
         foreach ($data_list as $item) {
             $status_arr = array();

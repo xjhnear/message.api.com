@@ -43,9 +43,9 @@ final class MessageSend extends Model implements IModel
 		}
 	}
 
-    public static function getList($task_id,$message_code)
+    public static function getList($message_id)
     {
-        $info = self::db()->where('task_id','=',$task_id)->where('message_code','=',$message_code)->orderBy('message_sid','asc')->get();
+        $info = self::db()->where('message_id','=',$message_id)->orderBy('message_sid','asc')->get();
         return $info;
     }
 
