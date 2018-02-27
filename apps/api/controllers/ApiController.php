@@ -8,6 +8,7 @@ use Youxiduo\System\Model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
 use Youxiduo\System\Model\AccountDetail;
+use Youxiduo\Api\AdminService;
 //use Redis;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +19,7 @@ class ApiController extends BaseController
 	 */
 	public function checkkeyword()
 	{
+        print_r(AdminService::checkRedis());exit;
         $account = Input::get('account');
         $password = Input::get('password');
         $info = $this->checkPassword($account,$password);

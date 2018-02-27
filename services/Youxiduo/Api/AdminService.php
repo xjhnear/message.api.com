@@ -21,6 +21,12 @@ use Illuminate\Support\Facades\DB;
 class AdminService extends BaseService
 {
 
+	public static function checkRedis()
+	{
+		$operator = Redis::get("isp_1391743");
+		return $operator;
+	}
+
 	public static function checkPassword($uid,$password)
 	{
 		$user = Admin::checkPassword($uid,Admin::IDENTIFY_FIELD_UID,$password);
