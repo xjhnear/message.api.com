@@ -119,7 +119,7 @@ class ApiController extends BaseController
         $input = array();
         $input['message_code'] = 'M'.time();
         $input['phonenumbers'] = $mobile;
-        $input['phonenumbers_json'] = '';
+        $input['phonenumbers_json'] = json_encode($phone_number_arr);
         $input['count'] = $count;
         $input['content'] = $content;
         $input['content_json'] = json_encode(array('unicom'=>$content,'mobile'=>'','telecom'=>''));
@@ -172,7 +172,7 @@ class ApiController extends BaseController
             $input_d['message_code'] = $input['message_code'];
             $input_d['content'] = $content;
             $input_d['send_time'] = $sendTime;
-//            $input_d['operator'] = $operator_code;
+            $input_d['operator'] = $operator_code;
             $input_d['create_uid'] = $info['uid'];
             MessageDetail::save($input_d);
 
