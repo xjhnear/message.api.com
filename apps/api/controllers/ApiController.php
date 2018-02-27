@@ -8,7 +8,7 @@ use Youxiduo\System\Model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
 use Youxiduo\System\Model\AccountDetail;
-use Youxiduo\Api\AdminService;
+//use Youxiduo\Api\AdminService;
 //use Redis;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +19,6 @@ class ApiController extends BaseController
 	 */
 	public function checkkeyword()
 	{
-        print_r(AdminService::checkRedis());exit;
         $account = Input::get('account');
         $password = Input::get('password');
         $info = $this->checkPassword($account,$password);
@@ -66,41 +65,48 @@ class ApiController extends BaseController
         $sendTime = Input::get('sendTime');
 
         $mobile_arr = explode(',', $mobile);
-//        $phone_number_arr = $phone_number_show = array();
-//        $phone_number_arr['unicom'] = $phone_number_arr['mobile'] = $phone_number_arr['telecom'] = $phone_number_arr['other'] = array();
-//
-//        foreach ($mobile_arr as $item_phonenumber) {
-//            $phone_number_7 =  substr($item_phonenumber,0,7);
+        $phone_number_arr = $phone_number_show = array();
+        $phone_number_arr['unicom'] = $phone_number_arr['mobile'] = $phone_number_arr['telecom'] = $phone_number_arr['other'] = array();
+
+        foreach ($mobile_arr as $item_phonenumber) {
+            $phone_number_7 =  substr($item_phonenumber,0,7);
 //            if (Redis::exists("isp_".$phone_number_7)) {
 //                $operator = Redis::get("isp_".$phone_number_7);
 //            } else {
 //                $operator = '';
 //            }
-//            switch ($operator) {
-//                case "联通":
-//                    $phone_number_arr['unicom'][] = $item_phonenumber;
-//                    break;
-//                case "移动":
-//                    $phone_number_arr['mobile'][] = $item_phonenumber;
-//                    break;
-//                case "电信":
-//                    $phone_number_arr['telecom'][] = $item_phonenumber;
-//                    break;
-//                case "虚拟/联通":
-//                    $phone_number_arr['unicom'][] = $item_phonenumber;
-//                    break;
-//                case "虚拟/移动":
-//                    $phone_number_arr['mobile'][] = $item_phonenumber;
-//                    break;
-//                case "虚拟/电信":
-//                    $phone_number_arr['telecom'][] = $item_phonenumber;
-//                    break;
-//                default:
-//                    $phone_number_arr['other'][] = $item_phonenumber;
-//                    break;
-//            }
-//            $phone_number_show = array_merge($phone_number_arr['unicom'],$phone_number_arr['mobile'],$phone_number_arr['telecom'],$phone_number_arr['other']);
-//        }
+            $sql = 'SELECT isp FROM yii2_phone_model WHERE phone = "'.$phone_number_7.'"';
+            $info = DB::select($sql);
+            if (!$info) {
+                $operator = '';
+            } else {
+                $operator = $info[0]['isp'];
+            }
+            switch ($operator) {
+                case "联通":
+                    $phone_number_arr['unicom'][] = $item_phonenumber;
+                    break;
+                case "移动":
+                    $phone_number_arr['mobile'][] = $item_phonenumber;
+                    break;
+                case "电信":
+                    $phone_number_arr['telecom'][] = $item_phonenumber;
+                    break;
+                case "虚拟/联通":
+                    $phone_number_arr['unicom'][] = $item_phonenumber;
+                    break;
+                case "虚拟/移动":
+                    $phone_number_arr['mobile'][] = $item_phonenumber;
+                    break;
+                case "虚拟/电信":
+                    $phone_number_arr['telecom'][] = $item_phonenumber;
+                    break;
+                default:
+                    $phone_number_arr['other'][] = $item_phonenumber;
+                    break;
+            }
+            $phone_number_show = array_merge($phone_number_arr['unicom'],$phone_number_arr['mobile'],$phone_number_arr['telecom'],$phone_number_arr['other']);
+        }
 
         $count = count($mobile_arr);
         $rest = floor($info['balance']/$info['coefficient']);
@@ -124,35 +130,42 @@ class ApiController extends BaseController
         $message_id = MessageList::save($input);
 
         foreach ($mobile_arr as $item_phonenumber) {
-//            $phone_number_7 =  substr($item_phonenumber,0,7);
+            $phone_number_7 =  substr($item_phonenumber,0,7);
 //            if (Redis::exists("isp_".$phone_number_7)) {
 //                $operator = Redis::get("isp_".$phone_number_7);
 //            } else {
 //                $operator = '';
 //            }
-//            switch ($operator) {
-//                case "联通":
-//                    $operator_code = 1;
-//                    break;
-//                case "移动":
-//                    $operator_code = 2;
-//                    break;
-//                case "电信":
-//                    $operator_code = 3;
-//                    break;
-//                case "虚拟/联通":
-//                    $operator_code = 1;
-//                    break;
-//                case "虚拟/移动":
-//                    $operator_code = 2;
-//                    break;
-//                case "虚拟/电信":
-//                    $operator_code = 3;
-//                    break;
-//                default:
-//                    $operator_code = 4;
-//                    break;
-//            }
+            $sql = 'SELECT isp FROM yii2_phone_model WHERE phone = "'.$phone_number_7.'"';
+            $info = DB::select($sql);
+            if (!$info) {
+                $operator = '';
+            } else {
+                $operator = $info[0]['isp'];
+            }
+            switch ($operator) {
+                case "联通":
+                    $operator_code = 1;
+                    break;
+                case "移动":
+                    $operator_code = 2;
+                    break;
+                case "电信":
+                    $operator_code = 3;
+                    break;
+                case "虚拟/联通":
+                    $operator_code = 1;
+                    break;
+                case "虚拟/移动":
+                    $operator_code = 2;
+                    break;
+                case "虚拟/电信":
+                    $operator_code = 3;
+                    break;
+                default:
+                    $operator_code = 4;
+                    break;
+            }
             $input_d = array();
             $input_d['phonenumber'] = $item_phonenumber;
             $input_d['message_id'] = $message_id;
