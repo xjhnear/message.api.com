@@ -196,6 +196,8 @@ class ApiController extends BaseController
 
         $out['error'] = 0;
         $out['message'] = 'success';
+        $out['message_id'] = $message_id;
+        $out['message_code'] = $input['message_code'];
 
         return Response::json($out);
     }
@@ -234,8 +236,9 @@ class ApiController extends BaseController
             $r['remark'] = '用户名密码错误';
             return Response::json($r);
         }
-        $task_id = Input::get('task_id');
-        $data_list = MessageSend::getList($task_id);
+        $task_id = Input::get('message_id');
+        $message_code = Input::get('message_code');
+        $data_list = MessageSend::getList($task_id,$message_code);
         $status_arr = array();
         foreach ($data_list as $item) {
             $status_arr = array();
