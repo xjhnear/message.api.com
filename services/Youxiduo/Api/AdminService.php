@@ -16,6 +16,7 @@ use Youxiduo\Api\Model\Admin;
 use Youxiduo\Helper\Utility;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
+use Redis;
 
 
 class AdminService extends BaseService
