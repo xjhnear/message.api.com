@@ -19,7 +19,7 @@ class SystemController extends BaseController
 	{
 		$search['message_id'] = Input::get('message_id');
 		if (!$search['message_id']) return Response::json(array());
-		$pageSize = 2000;
+		$pageSize = 20000;
 		$input_l = array();
 		$input_l['message_id'] = $search['message_id'];
 		$input_l['status'] = 5;
@@ -40,7 +40,7 @@ class SystemController extends BaseController
 				$page = ceil($count/$pageSize);
 				for ($pageIndex=1; $pageIndex<=$page; $pageIndex++) {
 					$data_detail = array();
-					$data_detail = MessageDetail::getList($search,$pageIndex,$pageSize);
+					$data_detail = MessageDetail::getList($search,1,$pageSize);
 					$message_did_arr = $phonenumber_arr = array();
 					$sql="INSERT INTO yii2_message_send (message_id,message_did,phonenumber,task_id,operator,channel_id,create_time,uid) VALUES";
 					foreach ($data_detail as $item) {
@@ -80,6 +80,9 @@ class SystemController extends BaseController
 				}
 			}
 		}
+		$sql="UPDATE yii2_message_detail SET status=4 WHERE status=5 AND message_id=".$search['message_id'];
+		DB::update($sql);
+
 		$input_l = array();
 		$input_l['message_id'] = $search['message_id'];
 		if ($count_all > 0) {
