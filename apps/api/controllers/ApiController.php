@@ -302,6 +302,15 @@ class ApiController extends BaseController
         return Response::json($out);
     }
 
+    /**
+     * 状态报告
+     */
+    public function call()
+    {
+        $r = Redis::get("isp_1391743");
+        print_r($r);exit;
+    }
+
 	protected function unifySend($action,$params)
 	{
 		$url = 'http://139.196.58.248:5577/'.$action.'.aspx';

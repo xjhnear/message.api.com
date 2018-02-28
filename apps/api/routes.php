@@ -31,6 +31,9 @@ Route::any('api/overage{symbol}',array('before'=>'uri_verify','uses'=>'ApiContro
 //状态报告
 Route::any('api/status{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@status'));
 
+//上行
+Route::any('api/call{symbol}',array('before'=>'uri_verify','uses'=>'ApiController@call'));
+
 /*-------------------------------系统-----------------------------*/
 //短信发送
 Route::any('system/sms{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@sms'));
