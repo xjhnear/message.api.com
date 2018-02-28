@@ -8,6 +8,7 @@ use Youxiduo\System\Model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
 use Youxiduo\System\Model\AccountDetail;
+use Youxiduo\System\Model\MessageCall;
 //use Youxiduo\Api\AdminService;
 //use Redis;
 use Illuminate\Support\Facades\DB;
@@ -196,7 +197,7 @@ class ApiController extends BaseController
             $r['remark'] = '当前没有待查询的短信状态';
             return Response::json($r);
         }
-        $status_arr = array();
+        $status_arr = $status = array();
         foreach ($data_list as $item) {
             $status_arr = array();
             $status_arr['phonenumber'] = $item['phonenumber'];
@@ -211,12 +212,48 @@ class ApiController extends BaseController
     }
 
     /**
-     * 状态报告
+     * 上行
      */
     public function call()
     {
-        $r = Redis::get("isp_1391743");
-        print_r($r);exit;
+        $account = Input::get('account');
+        $password = Input::get('password');
+        if ($account=="" || $password=="") {
+            $r['error'] = 100;
+            $r['remark'] = '用户名或密码不能为空';
+            return Response::json($r);
+        }
+        $info = $this->checkPassword($account,$password);
+        if (!$info) {
+            $r['error'] = 100;
+            $r['remark'] = '用户名或密码错误';
+            return Response::json($r);
+        }
+        $mobile = Input::get('mobile');
+        if ($mobile=="") {
+            $r['error'] = 100;
+            $r['remark'] = '手机号码不能为空';
+            return Response::json($r);
+        }
+        $data_list = MessageCall::getList($mobile);
+        if (!$data_list) {
+            $r['error'] = 100;
+            $r['remark'] = '当前没有待查询的上行信息';
+            return Response::json($r);
+        }
+        $call = $call_arr = array();
+        foreach ($data_list as $item) {
+            $call_arr = array();
+            $call_arr['mobile'] = $item['phonenumber'];
+            $call_arr['content'] = $item['content'];
+            $call_arr['receivetime'] = date('Y-m-d H:i:s', $item['return_time']);
+            $call[] = $call_arr;
+        }
+        $out['error'] = 0;
+        $out['message'] = 'success';
+        $out['call'] = $call;
+
+        return Response::json($out);
     }
 
 	protected function unifySend($action,$params)

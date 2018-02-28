@@ -158,6 +158,39 @@ class SystemController extends BaseController
 		return Response::json($r);
 	}
 
+	/**
+	 * 上行查询
+	 */
+	public function call()
+	{
+		$channel_list = Channel::getList();
+		foreach ($channel_list as $channel_item) {
+			$params = array(
+				'action'=>'query'
+			);
+			$r = $this->unifySend('callApi', $params, $channel_item);
+
+			if (isset($r['callbox'])) {
+				if (isset($r['callbox']['mobile'])) {
+					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time) VALUES";
+					$tmpstr = "'". $r['callbox']['mobile'] ."','". $r['callbox']['taskid'] ."','". $r['callbox']['content'] ."','". strtotime($r['callbox']['receivetime']) ."','". time() ."'";
+					$sql .= "(".$tmpstr.")";
+					$sql = substr($sql,0,-1);   //去除最后的逗号
+					DB::insert($sql);
+				} else {
+					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time) VALUES";
+					foreach ($r['callbox'] as $item) {
+						$tmpstr = "'". $item['mobile'] ."','". $item['taskid'] ."','". $item['content'] ."','". strtotime($item['receivetime']) ."','". time() ."'";
+						$sql .= "(".$tmpstr."),";
+					}
+					$sql = substr($sql,0,-1);   //去除最后的逗号
+					DB::insert($sql);
+				}
+			}
+		}
+		return Response::json($r);
+	}
+
 	protected function checkListStatus($message_id)
 	{
 		$count = MessageDetail::getAllCount($message_id);

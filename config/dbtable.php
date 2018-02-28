@@ -10,6 +10,7 @@ $v4_tables = array(
     'youxiduo_system_model_account'=>array('db'=>'www','table'=>'account'),
     'youxiduo_system_model_accountdetail'=>array('db'=>'www','table'=>'account_detail'),
     'youxiduo_system_model_report'=>array('db'=>'www','table'=>'report'),
+    'youxiduo_system_model_messagecall'=>array('db'=>'www','table'=>'message_call'),
 
 );
 return $v4_tables;

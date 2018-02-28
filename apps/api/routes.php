@@ -44,6 +44,9 @@ Route::any('system/status{symbol}',array('before'=>'uri_verify','uses'=>'SystemC
 //日报
 Route::any('system/report{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@report'));
 
+//上行
+Route::any('system/call{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@call'));
+
 /*
 App::missing(function($exception){
 	return Response::json(array('result'=>array(),'errorCode'=>11211,'errorMessage'=>'Page Is Not Exists!!'));
