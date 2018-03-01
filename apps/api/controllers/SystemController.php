@@ -81,8 +81,8 @@ class SystemController extends BaseController
 				}
 			}
 		}
-		$sql="UPDATE yii2_message_detail SET status=4 WHERE status<>5 AND message_id=".$search['message_id'];
-		DB::update($sql);
+//		$sql="UPDATE yii2_message_detail SET status=4 WHERE status<>5 AND message_id=".$search['message_id'];
+//		DB::update($sql);
 
 		$input_l = array();
 		$input_l['message_id'] = $search['message_id'];
