@@ -1,6 +1,7 @@
 <?php
 use Yxd\Modules\Core\CacheService;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Config;
 use Youxiduo\System\MessageService;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
@@ -80,7 +81,7 @@ class SystemController extends BaseController
 				}
 			}
 		}
-		$sql="UPDATE yii2_message_detail SET status=4 WHERE status=5 AND message_id=".$search['message_id'];
+		$sql="UPDATE yii2_message_detail SET status=4 WHERE status<>5 AND message_id=".$search['message_id'];
 		DB::update($sql);
 
 		$input_l = array();
