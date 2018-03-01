@@ -172,15 +172,27 @@ class SystemController extends BaseController
 
 			if (isset($r['callbox'])) {
 				if (isset($r['callbox']['mobile'])) {
-					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time) VALUES";
-					$tmpstr = "'". $r['callbox']['mobile'] ."','". $r['callbox']['taskid'] ."','". $r['callbox']['content'] ."','". strtotime($r['callbox']['receivetime']) ."','". time() ."'";
+					$data_send = MessageSend::getInfo($r['callbox']['mobile'],$r['callbox']['taskid']);
+					if ($data_send) {
+						$uid = $data_send['uid'];
+					} else {
+						$uid = 0;
+					}
+					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time,uid) VALUES";
+					$tmpstr = "'". $r['callbox']['mobile'] ."','". $r['callbox']['taskid'] ."','". $r['callbox']['content'] ."','". strtotime($r['callbox']['receivetime']) ."','". time() ."','". $uid ."'";
 					$sql .= "(".$tmpstr.")";
 					$sql = substr($sql,0,-1);   //去除最后的逗号
 					DB::insert($sql);
 				} else {
-					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time) VALUES";
+					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time,uid) VALUES";
 					foreach ($r['callbox'] as $item) {
-						$tmpstr = "'". $item['mobile'] ."','". $item['taskid'] ."','". $item['content'] ."','". strtotime($item['receivetime']) ."','". time() ."'";
+						$data_send = MessageSend::getInfo($item['mobile'],$item['taskid']);
+						if ($data_send) {
+							$uid = $data_send['uid'];
+						} else {
+							$uid = 0;
+						}
+						$tmpstr = "'". $item['mobile'] ."','". $item['taskid'] ."','". $item['content'] ."','". strtotime($item['receivetime']) ."','". time() ."','". $uid ."'";
 						$sql .= "(".$tmpstr."),";
 					}
 					$sql = substr($sql,0,-1);   //去除最后的逗号

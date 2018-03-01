@@ -235,7 +235,7 @@ class ApiController extends BaseController
             $r['remark'] = '手机号码不能为空';
             return Response::json($r);
         }
-        $data_list = MessageCall::getList($mobile);
+        $data_list = MessageCall::getList($mobile,$info['uid']);
         if (!$data_list) {
             $r['error'] = 100;
             $r['remark'] = '当前没有待查询的上行信息';

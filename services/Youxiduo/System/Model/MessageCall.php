@@ -25,9 +25,9 @@ final class MessageCall extends Model implements IModel
 		return __CLASS__;
 	}
 
-    public static function getList($phonenumber)
+    public static function getList($phonenumber,$uid)
     {
-        $info = self::db()->where('phonenumber','=',$phonenumber)->orderBy('message_cid','asc')->get();
+        $info = self::db()->where('phonenumber','=',$phonenumber)->where('uid','=',$uid)->orderBy('message_cid','asc')->get();
         return $info;
     }
 
