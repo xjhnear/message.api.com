@@ -67,10 +67,12 @@ class SystemController extends BaseController
 					);
 					$channel_item = Channel::getInfo($channel_id);
 					if (!$channel_item) {
+						DB::update('update yii2_message_detail set status=4, errmsg="通道信息错误" where message_did in ('.$message_dids.')');
 						continue;
 					}
 					$r = $this->unifySend('sms', $params, $channel_item);
 					if ($r['returnstatus'] == 'Faild') {
+						DB::update('update yii2_message_detail set status=4, errmsg="'.$r['message'].'" where message_did in ('.$message_dids.')');
 						continue;
 					}
 					$count_all += $count;
