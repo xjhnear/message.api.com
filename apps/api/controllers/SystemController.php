@@ -282,10 +282,14 @@ class SystemController extends BaseController
      */
     public function report()
     {
+
         $start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
         $end = mktime(0,0,0,date("m"),date("d"),date("Y"));
         $c_date = date('Y-m-d');
-        $sql="select a.uid,IFNULL(count,0) as count,IFNULL(count_success,0) as count_success from yii2_admin as a 
+		$sql = 'SELECT * FROM yii2_report WHERE c_date = "'.$c_date.'"';
+		$info = DB::select($sql);
+		if (!$info) {
+			$sql="select a.uid,IFNULL(count,0) as count,IFNULL(count_success,0) as count_success from yii2_admin as a
 LEFT JOIN
 (
 select count(*) as count,uid from yii2_message_send where create_time between ".$start." and ".$end." group by uid
@@ -295,18 +299,18 @@ LEFT JOIN
 select count(*) as count_success,uid from yii2_message_send where status=10 and create_time between ".$start." and ".$end." group by uid
 ) as c on a.uid=c.uid
 where a.role = 1";
-        $send = DB::select($sql);
-        foreach ($send as $item) {
-            $input = array();
-            $input['uid'] = $item['uid'];
-            $input['c_date'] = $c_date;
-            $input['send_count'] = $item['count'];
-            $input['success_count'] = $item['count_success'];
-            $input['create_time'] = time();
-            Report::save($input);
-        }
+			$send = DB::select($sql);
+			foreach ($send as $item) {
+				$input = array();
+				$input['uid'] = $item['uid'];
+				$input['c_date'] = $c_date;
+				$input['send_count'] = $item['count'];
+				$input['success_count'] = $item['count_success'];
+				$input['create_time'] = time();
+				Report::save($input);
+			}
 
-    $sql="select a.uid,IFNULL(count_recharge,0) as count_recharge,IFNULL(count_consume,0) as count_consume,IFNULL(count_fail,0) as count_fail from yii2_admin as a 
+			$sql="select a.uid,IFNULL(count_recharge,0) as count_recharge,IFNULL(count_consume,0) as count_consume,IFNULL(count_fail,0) as count_fail from yii2_admin as a
 LEFT JOIN
 (
 select count(*) as count_recharge,uid from yii2_account_detail where remark='充值' and create_time between ".$start." and ".$end." group by uid
@@ -320,19 +324,20 @@ LEFT JOIN
 select count(*) as count_fail,uid from yii2_account_detail where remark='返还' and create_time between ".$start." and ".$end." group by uid
 ) as d on a.uid=d.uid
 where a.role = 1";
-        $send = DB::select($sql);
-        foreach ($send as $item) {
-            $input = array();
-            $input['uid'] = $item['uid'];
-            $input['c_date'] = $c_date;
-            $input['recharge_count'] = $item['count_recharge'];
-            $input['consume_count'] = $item['count_consume'];
-            $input['fail_count'] = $item['count_fail'];
-            $input['create_time'] = time();
-            Account::save($input);
-        }
+			$send = DB::select($sql);
+			foreach ($send as $item) {
+				$input = array();
+				$input['uid'] = $item['uid'];
+				$input['c_date'] = $c_date;
+				$input['recharge_count'] = $item['count_recharge'];
+				$input['consume_count'] = $item['count_consume'];
+				$input['fail_count'] = $item['count_fail'];
+				$input['create_time'] = time();
+				Account::save($input);
+			}
+		}
 
-        return true;
+		Response::json(array('true'));
     }
 
 }
