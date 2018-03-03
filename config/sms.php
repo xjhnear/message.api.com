@@ -7,4 +7,10 @@ return array(
     'userid'=>'JC2135',
     'pwd'=>'236158',
     'key'=>'00000000',
+
+    'action_arr'=>array(
+        '1'=>array('sms'=>'sms.aspx', 'status'=>'statusApi.aspx', 'call'=>'callApi.aspx'),
+        '2'=>array('sms'=>'http/submitSms', 'status'=>'http/getReportWithTime', 'call'=>'http/getReply'),
+        '3'=>array('sms'=>'MessageTransferWebAppJs/servlet/messageTransferServiceServletByXml', 'status'=>'MessageTransferWebAppJs/servlet/messageTransferServiceServletByXml', 'call'=>'MessageTransferWebAppJs/servlet/messageTransferServiceServletByXml')
+    ),
 );

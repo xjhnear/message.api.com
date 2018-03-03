@@ -18,6 +18,7 @@ class SystemController extends BaseController
 	 */
 	public function sms()
 	{
+
 		$search['message_id'] = Input::get('message_id');
 		if (!$search['message_id']) return Response::json(array());
 		$pageSize = 20000;
@@ -30,8 +31,8 @@ class SystemController extends BaseController
 		$content_arr['1'] =  $data_list['content']['unicom'];
 		$content_arr['2'] =  ($data_list['content']['mobile']<>'')?$data_list['content']['mobile']:$data_list['content']['unicom'];
 		$content_arr['3'] =  ($data_list['content']['telecom']<>'')?$data_list['content']['telecom']:$data_list['content']['unicom'];
-		$sendTime = date('Y-m-d H:i:s', $data_list['send_time']);
-		$extno = '';
+		$sendTime = $data_list['send_time'];
+        $message_code= $data_list['message_code'];
 		$count_all = 0;
 		for ($operator=1; $operator<=3; $operator++) {
 			$search['operator'] = $operator;
@@ -59,18 +60,19 @@ class SystemController extends BaseController
 					$mobile = implode(',',$phonenumber_arr);
 					$content = $content_arr[$operator];
 					$params = array(
-						'action'=>'send',
 						'mobile'=>$mobile,
 						'content'=>$content,
 						'sendTime'=>$sendTime,
-						'extno'=>$extno
+                        'message_code'=>$message_code,
 					);
 					$channel_item = Channel::getInfo($channel_id);
 					if (!$channel_item) {
 						DB::update('update yii2_message_detail set status=4, errmsg="通道信息错误" where message_did in ('.$message_dids.')');
 						continue;
 					}
-					$r = $this->unifySend('sms', $params, $channel_item);
+                    $params = $this->make_params($params, 'sms', $channel_item);
+					$r = $this->unifySend($params['arr'], $params['xml']);
+                    $r = $this->make_return($r, 'sms', $channel_item);
 					if ($r['returnstatus'] == 'Faild') {
 						DB::update('update yii2_message_detail set status=4, errmsg="'.$r['message'].'" where message_did in ('.$message_dids.')');
 						continue;
@@ -105,10 +107,10 @@ class SystemController extends BaseController
 	{
 		$channel_list = Channel::getList();
 		foreach ($channel_list as $channel_item) {
-			$params = array(
-				'action'=>'query'
-			);
-			$r = $this->unifySend('statusApi', $params, $channel_item);
+			$params = array();
+            $params = $this->make_params($params, 'status', $channel_item);
+            $r = $this->unifySend($params['arr'], $params['xml']);
+            $r = $this->make_return($r, 'status', $channel_item);
 //		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
 //		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
 
@@ -168,10 +170,10 @@ class SystemController extends BaseController
 	{
 		$channel_list = Channel::getList();
 		foreach ($channel_list as $channel_item) {
-			$params = array(
-				'action'=>'query'
-			);
-			$r = $this->unifySend('callApi', $params, $channel_item);
+            $params = array();
+            $params = $this->make_params($params, 'call', $channel_item);
+            $r = $this->unifySend($params['arr'], $params['xml']);
+            $r = $this->make_return($r, 'call', $channel_item);
 
 			if (isset($r['callbox'])) {
 				if (isset($r['callbox']['mobile'])) {
@@ -223,31 +225,169 @@ class SystemController extends BaseController
 		}
 	}
 
-	protected function unifySend($action,$params, $channel_item)
+	protected function unifySend($params, $xml='')
 	{
 //		$url = 'http://139.196.58.248:5577/'.$action.'.aspx';
 //		$userid = '8710';
 //		$account = '借鸿移动贷款';
 //		$password = 'a123456';
-		$url = $channel_item['url'].'/'.$action.'.aspx';
-		$userid = $channel_item['userid'];
-		$account = $channel_item['account'];
-		$password = $channel_item['password'];
-
-		$params['userid'] = $userid;
-		$params['account'] = $account;
-		$params['password'] = $password;
-		$o = "";
-		foreach ( $params as $k => $v )
-		{
+        $url = $params['url'];unset($params['url']);
+        $o = "";
+        foreach ( $params as $k => $v )
+        {
 //            $o.= "$k=" . urlencode(iconv('UTF-8', 'GB2312', $v)). "&" ;
-			$o.= "$k=" . urlencode($v). "&" ;
-		}
-		$post_data = substr($o,0,-1);
-		$re = $this->request_post($url, $post_data);
+            if ($v == '[XML]') {
+                $o.= "$k=" . $xml. "&" ;
+            } else {
+                $o.= "$k=" . urlencode($v). "&" ;
+            }
+        }
+        $post_data = substr($o,0,-1);
+//        echo $post_data;exit;
+        $re = $this->request_post($url, $post_data);
 
-		return $this->xmlToArray($re);
+        return $re;
+
 	}
+
+    protected function make_params($params, $action, $channel_item)
+    {
+        $params_new = array();
+        $params_xml = '';
+        switch ($channel_item['type']) {
+            case 1:
+                $action_arr = Config::get('sms.action_arr');
+                $params_new['url'] = $channel_item['url'].'/'.$action_arr[$channel_item['type']][$action];
+                $params_new['userid'] = $channel_item['userid'];
+                $params_new['account'] = $channel_item['account'];
+                $params_new['password'] = $channel_item['password'];
+                switch ($action) {
+                    case 'sms':
+                        $params_new['action'] = 'send';
+                        $params_new['extno'] = '';
+                        $params_new['mobile'] = $params['mobile'];
+                        $params_new['content'] = $params['content'];
+                        $params_new['sendTime'] = date('Y-m-d H:i:s', $params['sendTime']);
+                        break;
+                    case 'status':
+                        $params_new['action'] = 'query';
+                        break;
+                    case 'call':
+                        $params_new['action'] = 'query';
+                        break;
+                }
+                break;
+            case 2:
+                $action_arr = Config::get('sms.action_arr');
+                $params_new['url'] = $channel_item['url'].'/'.$action_arr[$channel_item['type']][$action];
+                $params_new['account'] = $channel_item['account'];
+                $params_new['password'] = md5($channel_item['password']);
+                switch ($action) {
+                    case 'sms':
+                        $params_new['smsType'] = $channel_item['userid'];
+                        $params_new['message'] = '[XML]';
+                        $params_xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><MtMessage>';
+                        $params_xml .= '<content>'.$params['content'].'</content>';
+                        $mobile_arr = explode(',',$params['mobile']);
+                        foreach ($mobile_arr as $item_mobile) {
+                            $params_xml .= '<phoneNumber>'.$item_mobile.'</phoneNumber>';
+                        }
+                        $params_xml .= '<sendTime>'.date('Y-m-d H:i:s', $params['sendTime']).'</sendTime>';
+                        $params_xml .= '<smsId>'.$params['message_code'].'</smsId>';
+                        $params_xml .= '<subCode></subCode><templateId></templateId></MtMessage>';
+                        break;
+                    case 'status':
+                        break;
+                    case 'call':
+                        break;
+                }
+                break;
+            case 3:
+                $action_arr = Config::get('sms.action_arr');
+                $params_new['url'] = $channel_item['url'].'/'.$action_arr[$channel_item['type']][$action];
+                $params_new['userName'] = $channel_item['account'];
+                $params_new['passWord'] = $channel_item['password'];
+                switch ($action) {
+                    case 'sms':
+                        $params_new['cmd'] = 'sendBatchMessage';
+                        $params_new['mobilePhones'] = $params['mobile'];
+                        $params_new['body'] = $params['content'];
+                        $params_new['scheduleDateStr'] = date('yyyyMMddHHmmss', $params['sendTime']);;
+                        break;
+                    case 'status':
+                        $params_new['cmd'] = 'query';
+                        break;
+                    case 'call':
+                        $params_new['cmd'] = 'query';
+                        break;
+                }
+                break;
+        }
+        return array('arr'=>$params_new, 'xml'=>$params_xml);
+    }
+
+    protected function make_return($r, $action, $channel_item)
+    {
+        $return_new = array();
+        switch ($channel_item['type']) {
+            case 1:
+                $return_new = $this->xmlToArray($r);
+                break;
+            case 2:
+                $return = $this->xmlToArray($r);
+                switch ($action) {
+                    case 'sms':
+                        if ($return['subStat'] == 'r:000') {
+                            $return_new['returnstatus'] = 'Success';
+                            $return_new['taskID'] = $return['smsId'];
+                        } else {
+                            $return_new['returnstatus'] = 'Faild';
+                            $return_new['message'] = $return['subStatDes'];
+                        }
+                        break;
+                    case 'status':
+                        if (isset($return['subStat']) && isset($return['resDetail'])) {
+                            $return_new['statusbox'] = array();
+                            foreach ($return['resDetail'] as $item) {
+                                $statusbox = array();
+                                $statusbox['mobile'] = $item['phoneNumber'];
+                                $statusbox['taskid'] = $item['smsId'];
+                                $statusbox['receivetime'] = strtotime($item['revTime']);
+                                $statusbox['taskid'] = $item['smsId'];
+                                $statusbox['errorcode'] = $item['statDes'];
+                                $statusbox['extno'] = '';
+                                if ($item['stat'] == 'r:000') {
+                                    $statusbox['status'] = 10;
+                                } else {
+                                    $statusbox['status'] = 20;
+                                }
+                                $return_new['statusbox'][] = $statusbox;
+                            }
+                        }
+                        break;
+                    case 'call':
+                        if (isset($return['subStat']) && isset($return['resDetail'])) {
+                            $return_new['callbox'] = array();
+                            foreach ($return['resDetail'] as $item) {
+                                $callbox = array();
+                                $callbox['mobile'] = $item['phoneNumber'];
+                                $callbox['taskid'] = '';
+                                $callbox['content'] = $item['content'];
+                                $callbox['receivetime'] = strtotime($item['revTime']);
+                                $return_new['callbox'][] = $callbox;
+                            }
+                        }
+                        break;
+                }
+                break;
+            case 3:
+                echo $r;exit;
+                $return = $this->xmlToArray($r);
+                print_r($return);exit;
+                break;
+        }
+        return $return_new;
+    }
 
 	protected function request_post($url = '', $param = '') {
 		if (empty($url) || empty($param)) {
