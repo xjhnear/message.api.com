@@ -285,7 +285,7 @@ class SystemController extends BaseController
 
         $start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
         $end = mktime(0,0,0,date("m"),date("d"),date("Y"));
-        $c_date = date('Y-m-d');
+        $c_date = date("Y-m-d",strtotime("-1 day"));
 		$sql = 'SELECT * FROM yii2_report WHERE c_date = "'.$c_date.'"';
 		$info = DB::select($sql);
 		if (!$info) {
