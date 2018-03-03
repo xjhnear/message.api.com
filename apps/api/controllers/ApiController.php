@@ -97,7 +97,7 @@ class ApiController extends BaseController
         }
         $mobile_arr = explode(',', $mobile);
         $count = count($mobile_arr);
-        $rest = floor($info['balance']/$info['coefficient']);
+        $rest = $info['balance'];
         if ($count > $rest) {
             $r['error'] = 100;
             $r['remark'] = '您目前的余额只能发送'.$rest.'个号码';
