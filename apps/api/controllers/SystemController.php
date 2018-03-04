@@ -312,7 +312,7 @@ class SystemController extends BaseController
                         $params_new['cmd'] = 'sendBatchMessage';
                         $params_new['mobilePhones'] = $params['mobile'];
                         $params_new['body'] = $params['content'];
-                        $params_new['scheduleDateStr'] = date('yyyyMMddHHmmss', $params['sendTime']);;
+                        $params_new['scheduleDateStr'] = date('yyyyMMddHHmmss', $params['sendTime']);
                         break;
                     case 'status':
                         $params_new['cmd'] = 'query';
@@ -453,15 +453,15 @@ where a.role = 1";
 			$sql="select a.uid,IFNULL(count_recharge,0) as count_recharge,IFNULL(count_consume,0) as count_consume,IFNULL(count_fail,0) as count_fail from yii2_admin as a
 LEFT JOIN
 (
-select count(*) as count_recharge,uid from yii2_account_detail where remark='充值' and create_time between ".$start." and ".$end." group by uid
+select sum(change_count) as count_recharge,uid from yii2_account_detail where remark='充值' and create_time between ".$start." and ".$end." group by uid
 ) as b on a.uid=b.uid
 LEFT JOIN
 (
-select count(*) as count_consume,uid from yii2_account_detail where change_type=2 and create_time between ".$start." and ".$end." group by uid
+select sum(change_count) as count_consume,uid from yii2_account_detail where change_type=2 and create_time between ".$start." and ".$end." group by uid
 ) as c on a.uid=c.uid
 LEFT JOIN
 (
-select count(*) as count_fail,uid from yii2_account_detail where remark='返还' and create_time between ".$start." and ".$end." group by uid
+select sum(change_count) as count_fail,uid from yii2_account_detail where remark='返还' and create_time between ".$start." and ".$end." group by uid
 ) as d on a.uid=d.uid
 where a.role = 1";
 			$send = DB::select($sql);
