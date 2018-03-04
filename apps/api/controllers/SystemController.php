@@ -334,7 +334,9 @@ class SystemController extends BaseController
                 $return_new = $this->xmlToArray($r);
                 break;
             case 2:
+//                $r = '<ReportMessageRes><resDetail><revTime>2018-03-04 21:55:41</revTime><phoneNumber>13917438216</phoneNumber><smsId>M1519630974</smsId><stat>r:000</stat><statDes>DELIVRD</statDes></resDetail><subStat>r:000</subStat><subStatDes>获取状态报告记录数:1</subStatDes></ReportMessageRes>';
                 $return = $this->xmlToArray($r);
+
                 switch ($action) {
                     case 'sms':
                         if ($return['subStat'] == 'r:000') {
@@ -347,6 +349,10 @@ class SystemController extends BaseController
                         break;
                     case 'status':
                         if (isset($return['subStat']) && isset($return['resDetail'])) {
+                            if (isset($return['resDetail']['phoneNumber'])) {
+                                $resDetail = $return['resDetail'];
+                                $return['resDetail'] = array(0=>$resDetail);
+                            }
                             $return_new['statusbox'] = array();
                             foreach ($return['resDetail'] as $item) {
                                 $statusbox = array();
