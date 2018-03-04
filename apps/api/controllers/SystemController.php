@@ -373,6 +373,10 @@ class SystemController extends BaseController
                         break;
                     case 'call':
                         if (isset($return['subStat']) && isset($return['resDetail'])) {
+                            if (isset($return['resDetail']['phoneNumber'])) {
+                                $resDetail = $return['resDetail'];
+                                $return['resDetail'] = array(0=>$resDetail);
+                            }
                             $return_new['callbox'] = array();
                             foreach ($return['resDetail'] as $item) {
                                 $callbox = array();
