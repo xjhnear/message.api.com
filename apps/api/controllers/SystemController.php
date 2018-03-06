@@ -326,9 +326,22 @@ class SystemController extends BaseController
         return array('arr'=>$params_new, 'xml'=>$params_xml);
     }
 
+	protected function xmlSave($r,$action='other'){
+
+		$filePath = '/downloads/'.$action.'/'.date('Ymd').'/'.date('H').'/';
+		if(!is_dir(public_path() . $filePath)) {
+			mkdir(public_path() . $filePath,0777,true);
+		}
+		$fp = fopen(public_path() . $filePath . $action . '_' . date('YmdHis') .'.xml','a');
+		fwrite($fp, $r);
+		fclose($fp);
+	}
+
     protected function make_return($r, $action, $channel_item)
     {
-        $return_new = array();
+
+		$this->xmlSave($r, $action);
+		$return_new = array();
         switch ($channel_item['type']) {
             case 1:
                 $return_new = $this->xmlToArray($r);
@@ -425,6 +438,19 @@ class SystemController extends BaseController
 		$xmlstring = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
 		$val = json_decode(json_encode($xmlstring),true);
 		return $val;
+	}
+
+	/**
+	 * 超时处理
+	 */
+	public function timeout()
+	{
+
+		$r = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ReportMessageRes><resDetail><revTime>2018-03-04 21:55:41</revTime><phoneNumber>13917438216</phoneNumber><smsId>M1519630974</smsId><stat>r:000</stat><statDes>DELIVRD</statDes></resDetail><subStat>r:000</subStat><subStatDes>获取状态报告记录数:1</subStatDes></ReportMessageRes>';
+		$this->xmlSave($r, 'status');
+
+		$time = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
+		print_r($time);exit;
 	}
 
     /**
