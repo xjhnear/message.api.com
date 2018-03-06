@@ -445,12 +445,26 @@ class SystemController extends BaseController
 	 */
 	public function timeout()
 	{
-
-		$r = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ReportMessageRes><resDetail><revTime>2018-03-04 21:55:41</revTime><phoneNumber>13917438216</phoneNumber><smsId>M1519630974</smsId><stat>r:000</stat><statDes>DELIVRD</statDes></resDetail><subStat>r:000</subStat><subStatDes>获取状态报告记录数:1</subStatDes></ReportMessageRes>';
-		$this->xmlSave($r, 'status');
-
 		$time = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
-		print_r($time);exit;
+		$sql="SELECT a.message_id  FROM
+(SELECT DISTINCT message_id
+FROM yii2_message_detail WHERE `status`=5) a
+INNER JOIN
+(SELECT DISTINCT message_id
+FROM yii2_message_send WHERE create_time<".$time." AND `status`=0) b
+ON a.message_id = b.message_id";
+		$message_id = DB::select($sql);
+		if ($message_id) {
+			foreach ($message_id[0] as $item) {
+				$sql_count="select count(*) as num,create_uid,content from yii2_message_detail where status=5 and message_id =".$item." group by content,create_uid";
+				$item_count = DB::select($sql_count);
+
+				print_r($item_count);exit;
+				DB::update('update yii2_message_detail set status=4, errmsg="超时" where status=5 and message_id ='.$item);
+				DB::update('update yii2_admin set balance=balance+'.$item_count[0]['num'].' where uid ='.$item_count[0]['create_uid']);
+			}
+		}
+		Response::json(array('true'));
 	}
 
     /**
