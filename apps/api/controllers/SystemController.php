@@ -445,7 +445,7 @@ class SystemController extends BaseController
 	 */
 	public function timeout()
 	{
-		$time = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
+		$time = mktime(0,0,0,date("m"),date("d")-3,date("Y"));
 		$sql="SELECT a.message_id  FROM
 (SELECT DISTINCT message_id
 FROM yii2_message_detail WHERE `status`=5) a
@@ -456,12 +456,28 @@ ON a.message_id = b.message_id";
 		$message_id = DB::select($sql);
 		if ($message_id) {
 			foreach ($message_id[0] as $item) {
+                $item = 20;
 				$sql_count="select count(*) as num,create_uid,content from yii2_message_detail where status=5 and message_id =".$item." group by content,create_uid";
 				$item_count = DB::select($sql_count);
-
-				print_r($item_count);exit;
+                $balance = $create_uid = 0;
+                foreach ($item_count as $item_c) {
+                    $message_count = mb_strlen($item_c['content']);
+                    $power = 1;
+                    if ($message_count > 130) {
+                        $power = 3;
+                    } elseif ($message_count > 70) {
+                        $power = 2;
+                    } else {
+                        $power = 1;
+                    }
+                    $create_uid = $item_c['create_uid'];
+                    $balance = $item_c['num'] * $power;
+                }
+                $balance_now = DB::select('select balance from yii2_admin where uid ='.$create_uid);
 				DB::update('update yii2_message_detail set status=4, errmsg="超时" where status=5 and message_id ='.$item);
-				DB::update('update yii2_admin set balance=balance+'.$item_count[0]['num'].' where uid ='.$item_count[0]['create_uid']);
+				DB::update('update yii2_admin set balance=balance+'.$balance.' where uid ='.$create_uid);
+                $balance_now = DB::select('select balance from yii2_admin where uid ='.$create_uid);
+                DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$create_uid.'","'.$balance.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
 			}
 		}
 		Response::json(array('true'));
