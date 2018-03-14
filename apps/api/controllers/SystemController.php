@@ -21,7 +21,7 @@ class SystemController extends BaseController
 
 		$search['message_id'] = Input::get('message_id');
 		if (!$search['message_id']) return Response::json(array());
-		$pageSize = 20000;
+		$pageSize = 10000;
 		$input_l = array();
 		$input_l['message_id'] = $search['message_id'];
 		$input_l['status'] = 5;
