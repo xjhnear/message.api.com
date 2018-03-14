@@ -31,7 +31,7 @@ INNER JOIN
 (SELECT a.message_did,b.status FROM yii2_message_send a
 INNER JOIN yii2_message_return b
 ON a.task_id = b.taskid AND a.phonenumber=b.phone
-WHERE b.is_do = 0 AND a.`status` = 0) bb
+WHERE b.is_do = 0) bb
 ON aa.message_did = bb.message_did
 SET aa.status = case when (bb.status<>10) then 4 else 3 end
 WHERE aa.`status`=5
