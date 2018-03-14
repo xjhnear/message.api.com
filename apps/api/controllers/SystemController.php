@@ -213,7 +213,7 @@ class SystemController extends BaseController
 
 			if (isset($r['callbox'])) {
 				if (isset($r['callbox']['mobile'])) {
-					$data_send = MessageSend::getInfo($r['callbox']['mobile'],$r['callbox']['taskid']);
+					$data_send = MessageSend::getInfo2($r['callbox']['mobile'],$r['callbox']['taskid']);
 					if ($data_send) {
 						$uid = $data_send['uid'];
 					} else {
@@ -227,7 +227,7 @@ class SystemController extends BaseController
 				} else {
 					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time,uid) VALUES";
 					foreach ($r['callbox'] as $item) {
-						$data_send = MessageSend::getInfo($item['mobile'],$item['taskid']);
+						$data_send = MessageSend::getInfo2($item['mobile'],$item['taskid']);
 						if ($data_send) {
 							$uid = $data_send['uid'];
 						} else {
