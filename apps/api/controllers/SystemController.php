@@ -199,7 +199,49 @@ class SystemController extends BaseController
 		return Response::json($r);
 	}
 
+    /**
+     * 获取状态报告
+     */
+    public function getstatus()
+    {
+        $channel_list = Channel::getList();
+        foreach ($channel_list as $channel_item) {
+            $params = array();
+            $params = $this->make_params($params, 'status', $channel_item);
+            $r = $this->unifySend($params['arr'], $params['xml']);
+            $r = $this->make_return($r, 'status', $channel_item);
 
+            if (isset($r['statusbox'])) {
+                $balance_arr = array();
+                if (isset($r['statusbox']['mobile'])) {
+                    $data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
+                    if ($data_send) {
+                        $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES";
+                        $extno = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
+                        $tmpstr = "'". $r['statusbox']['mobile'] ."','". $r['statusbox']['taskid'] ."','". $r['statusbox']['status'] ."','". $r['statusbox']['receivetime'] ."','". $r['statusbox']['errorcode'] ."','". $extno ."','". time() ."'";
+                        $sql .= "(".$tmpstr.")";
+                        $sql = substr($sql,0,-1);   //去除最后的逗号
+                        DB::insert($sql);
+                    }
+                } else {
+                    $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES";
+                    foreach ($r['statusbox'] as $item) {
+                        $extno = is_array($item['extno'])?'':$item['extno'];
+                        $tmpstr = "'". $item['mobile'] ."','". $item['taskid'] ."','". $item['status'] ."','". $item['receivetime'] ."','". $item['errorcode'] ."','". $extno ."','". time() ."'";
+                        $sql .= "(".$tmpstr."),";
+                    }
+                    $sql = substr($sql,0,-1);   //去除最后的逗号
+                    DB::insert($sql);
+                }
+            }
+        }
+        return Response::json($r);
+
+    }
+
+    /**
+     * 手动处理文件状态报告
+     */
 	public function statushand()
 	{
 		$name = Input::get('name');

@@ -38,9 +38,11 @@ Route::any('api/call{symbol}',array('before'=>'uri_verify','uses'=>'ApiControlle
 //短信发送
 Route::any('system/sms{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@sms'));
 
-//状态报告
-Route::any('system/status{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@status'));
-//手动状态报告
+//获取状态报告
+Route::any('system/getstatus{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@getstatus'));
+//处理状态报告
+Route::any('system/dostatus{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@dostatus'));
+//手动处理文件状态报告
 Route::any('system/statushand{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@statushand'));
 
 //日报
