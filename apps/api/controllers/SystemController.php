@@ -101,7 +101,7 @@ class SystemController extends BaseController
 	}
 
 	/**
-	 * 状态报告查询
+	 * 状态报告查询 (已废弃)
 	 */
 	public function status()
 	{
@@ -237,6 +237,42 @@ class SystemController extends BaseController
         }
         return Response::json($r);
 
+    }
+
+    /**
+     * 处理状态报告
+     */
+    public function dostatus()
+    {
+        $sql = 'SELECT MAX(rid) as max_rid FROM yii2_message_return WHERE is_do = 0';
+        $max_rid = DB::select($sql);
+        $max_rid = $max_rid[0]['max_rid'];
+
+        $sql2 = 'UPDATE yii2_message_send a
+INNER JOIN yii2_message_return b
+ON a.task_id = b.taskid AND a.phonenumber=b.phone
+SET a.errorcode = b.errorcode,
+a.status = b.status,
+a.extno = b.extno,
+a.return_time = b.retime
+WHERE a.`status`=0 AND b.is_do = 0 AND b.rid <= '.$max_rid;
+        DB::update($sql2);
+
+        $sql3 = 'UPDATE yii2_message_detail aa
+INNER JOIN
+(SELECT a.message_did,b.status FROM yii2_message_send a
+INNER JOIN yii2_message_return b
+ON a.task_id = b.taskid AND a.phonenumber=b.phone
+WHERE b.is_do = 0 AND b.rid <= '.$max_rid.' AND a.`status` = 0) bb
+ON aa.message_did = bb.message_did
+SET aa.status = case when (bb.status<>10) then 4 else 3 end
+WHERE aa.`status`=5';
+        DB::update($sql3);
+
+        $sql4 = 'UPDATE yii2_message_return SET is_do = 1 WHERE is_do = 0 AND rid <= '.$max_rid;
+        DB::update($sql4);
+
+        Response::json(array('true'));
     }
 
     /**
