@@ -40,7 +40,8 @@ Route::any('system/sms{symbol}',array('before'=>'uri_verify','uses'=>'SystemCont
 
 //状态报告
 Route::any('system/status{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@status'));
-Route::any('system/statusbak{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@statusbak'));
+//手动状态报告
+Route::any('system/statushand{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@statushand'));
 
 //日报
 Route::any('system/report{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@report'));

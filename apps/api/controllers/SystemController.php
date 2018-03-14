@@ -133,21 +133,21 @@ class SystemController extends BaseController
 							$input_d['status'] = 3;
 						} else {
 							$input_d['status'] = 4;
-                            $detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
-                            $message_count = mb_strlen($detail_now[0]['content']);
-                            $power = 1;
-                            if ($message_count > 130) {
-                                $power = 3;
-                            } elseif ($message_count > 70) {
-                                $power = 2;
-                            } else {
-                                $power = 1;
-                            }
-                            if (isset($balance_arr[$detail_now[0]['create_uid']])) {
-                                $balance_arr[$detail_now[0]['create_uid']] += $power;
-                            } else {
-                                $balance_arr[$detail_now[0]['create_uid']] = $power;
-                            }
+//                            $detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
+//                            $message_count = mb_strlen($detail_now[0]['content']);
+//                            $power = 1;
+//                            if ($message_count > 130) {
+//                                $power = 3;
+//                            } elseif ($message_count > 70) {
+//                                $power = 2;
+//                            } else {
+//                                $power = 1;
+//                            }
+//                            if (isset($balance_arr[$detail_now[0]['create_uid']])) {
+//                                $balance_arr[$detail_now[0]['create_uid']] += $power;
+//                            } else {
+//                                $balance_arr[$detail_now[0]['create_uid']] = $power;
+//                            }
 						}
 						MessageDetail::save($input_d);
 					}
@@ -169,38 +169,38 @@ class SystemController extends BaseController
 								$input_d['status'] = 3;
 							} else {
                                 $input_d['status'] = 4;
-                                $detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
-                                $message_count = mb_strlen($detail_now[0]['content']);
-                                $power = 1;
-                                if ($message_count > 130) {
-                                    $power = 3;
-                                } elseif ($message_count > 70) {
-                                    $power = 2;
-                                } else {
-                                    $power = 1;
-                                }
-                                if (isset($balance_arr[$detail_now[0]['create_uid']])) {
-                                    $balance_arr[$detail_now[0]['create_uid']] += $power;
-                                } else {
-                                    $balance_arr[$detail_now[0]['create_uid']] = $power;
-                                }
+//                                $detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
+//                                $message_count = mb_strlen($detail_now[0]['content']);
+//                                $power = 1;
+//                                if ($message_count > 130) {
+//                                    $power = 3;
+//                                } elseif ($message_count > 70) {
+//                                    $power = 2;
+//                                } else {
+//                                    $power = 1;
+//                                }
+//                                if (isset($balance_arr[$detail_now[0]['create_uid']])) {
+//                                    $balance_arr[$detail_now[0]['create_uid']] += $power;
+//                                } else {
+//                                    $balance_arr[$detail_now[0]['create_uid']] = $power;
+//                                }
 							}
 							MessageDetail::save($input_d);
 						}
 					}
 				}
-                foreach ($balance_arr as $k=>$v) {
-                    DB::update('update yii2_admin set balance=balance+'.$v.' where uid ='.$k);
-                    $balance_now = DB::select('select balance from yii2_admin where uid ='.$k);
-                    DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$k.'","'.$v.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
-                }
+//                foreach ($balance_arr as $k=>$v) {
+//                    DB::update('update yii2_admin set balance=balance+'.$v.' where uid ='.$k);
+//                    $balance_now = DB::select('select balance from yii2_admin where uid ='.$k);
+//                    DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$k.'","'.$v.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
+//                }
 			}
 		}
 		return Response::json($r);
 	}
 
 
-	public function statusbak()
+	public function statushand()
 	{
 		$name = Input::get('name');
 		$path1 = Input::get('path1');
@@ -228,21 +228,21 @@ class SystemController extends BaseController
 						$input_d['status'] = 3;
 					} else {
 						$input_d['status'] = 4;
-						$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
-						$message_count = mb_strlen($detail_now[0]['content']);
-						$power = 1;
-						if ($message_count > 130) {
-							$power = 3;
-						} elseif ($message_count > 70) {
-							$power = 2;
-						} else {
-							$power = 1;
-						}
-						if (isset($balance_arr[$detail_now[0]['create_uid']])) {
-							$balance_arr[$detail_now[0]['create_uid']] += $power;
-						} else {
-							$balance_arr[$detail_now[0]['create_uid']] = $power;
-						}
+//						$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
+//						$message_count = mb_strlen($detail_now[0]['content']);
+//						$power = 1;
+//						if ($message_count > 130) {
+//							$power = 3;
+//						} elseif ($message_count > 70) {
+//							$power = 2;
+//						} else {
+//							$power = 1;
+//						}
+//						if (isset($balance_arr[$detail_now[0]['create_uid']])) {
+//							$balance_arr[$detail_now[0]['create_uid']] += $power;
+//						} else {
+//							$balance_arr[$detail_now[0]['create_uid']] = $power;
+//						}
 					}
 					MessageDetail::save($input_d);
 				}
@@ -264,31 +264,31 @@ class SystemController extends BaseController
 							$input_d['status'] = 3;
 						} else {
 							$input_d['status'] = 4;
-							$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
-							$message_count = mb_strlen($detail_now[0]['content']);
-							$power = 1;
-							if ($message_count > 130) {
-								$power = 3;
-							} elseif ($message_count > 70) {
-								$power = 2;
-							} else {
-								$power = 1;
-							}
-							if (isset($balance_arr[$detail_now[0]['create_uid']])) {
-								$balance_arr[$detail_now[0]['create_uid']] += $power;
-							} else {
-								$balance_arr[$detail_now[0]['create_uid']] = $power;
-							}
+//							$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
+//							$message_count = mb_strlen($detail_now[0]['content']);
+//							$power = 1;
+//							if ($message_count > 130) {
+//								$power = 3;
+//							} elseif ($message_count > 70) {
+//								$power = 2;
+//							} else {
+//								$power = 1;
+//							}
+//							if (isset($balance_arr[$detail_now[0]['create_uid']])) {
+//								$balance_arr[$detail_now[0]['create_uid']] += $power;
+//							} else {
+//								$balance_arr[$detail_now[0]['create_uid']] = $power;
+//							}
 						}
 						MessageDetail::save($input_d);
 					}
 				}
 			}
-			foreach ($balance_arr as $k=>$v) {
-				DB::update('update yii2_admin set balance=balance+'.$v.' where uid ='.$k);
-				$balance_now = DB::select('select balance from yii2_admin where uid ='.$k);
-				DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$k.'","'.$v.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
-			}
+//			foreach ($balance_arr as $k=>$v) {
+//				DB::update('update yii2_admin set balance=balance+'.$v.' where uid ='.$k);
+//				$balance_now = DB::select('select balance from yii2_admin where uid ='.$k);
+//				DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$k.'","'.$v.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
+//			}
 		}
 		return Response::json($r);
 	}
@@ -599,7 +599,7 @@ class SystemController extends BaseController
 			$end = mktime(0,0,0,date("m"),date("d")-3,date("Y"));
 			$sql="SELECT a.message_id  FROM
 (SELECT DISTINCT message_id
-FROM yii2_message_detail WHERE `status`=5) a
+FROM yii2_message_detail WHERE `status`=4) a
 INNER JOIN
 (SELECT DISTINCT message_id
 FROM yii2_message_send WHERE create_time<".$end." AND `status`=0) b
@@ -607,7 +607,7 @@ ON a.message_id = b.message_id";
 			$message_id = DB::select($sql);
 			if ($message_id) {
 				foreach ($message_id as $item) {
-					$sql_count="select count(*) as num,create_uid,content from yii2_message_detail where status=5 and message_id =".$item['message_id']." group by content,create_uid";
+					$sql_count="select count(*) as num,create_uid,content from yii2_message_detail where status=4 and message_id =".$item['message_id']." group by content,create_uid";
 					$item_count = DB::select($sql_count);
 					$balance = $create_uid = 0;
 					foreach ($item_count as $item_c) {
@@ -623,7 +623,7 @@ ON a.message_id = b.message_id";
 						$create_uid = $item_c['create_uid'];
 						$balance += $item_c['num'] * $power;
 					}
-					DB::update('update yii2_message_detail set status=4, errmsg="超时" where status=5 and message_id ='.$item['message_id']);
+//					DB::update('update yii2_message_detail set status=4, errmsg="超时" where status=5 and message_id ='.$item['message_id']);
 					DB::update('update yii2_admin set balance=balance+'.$balance.' where uid ='.$create_uid);
 					$balance_now = DB::select('select balance from yii2_admin where uid ='.$create_uid);
 					DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$create_uid.'","'.$balance.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
