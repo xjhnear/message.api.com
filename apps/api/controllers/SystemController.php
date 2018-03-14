@@ -207,22 +207,7 @@ class SystemController extends BaseController
 		$path2 = Input::get('path2');
 		$channel_item['type'] = Input::get('type');
 		$xml = $this->xmlRead($name,$path1,$path2, 'status');
-//		$return_new = $this->xmlToArray($xml);
 		$r = $this->make_return($xml, 'status', $channel_item);
-		print_r($r);exit;
-
-//		$channel_item = Channel::getInfo($channel_id);
-//		if (!$channel_item) {
-//			DB::update('update yii2_message_detail set status=4, errmsg="通道信息错误" where message_did in ('.$message_dids.')');
-//			continue;
-//		}
-
-		$params = array();
-		$params = $this->make_params($params, 'status', $channel_item);
-		$r = $this->unifySend($params['arr'], $params['xml']);
-		$r = $this->make_return($r, 'status', $channel_item);
-//		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
-		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
 
 		if (isset($r['statusbox'])) {
 			$balance_arr = array();
