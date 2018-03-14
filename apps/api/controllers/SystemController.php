@@ -203,8 +203,10 @@ class SystemController extends BaseController
 	public function statusbak()
 	{
 		$name = Input::get('name');
+		$path1 = Input::get('path1');
+		$path2 = Input::get('path2');
 
-		$xml = $this->xmlRead($name, 'status');
+		$xml = $this->xmlRead($name,$path1,$path2, 'status');
 		echo $xml;exit;
 
 //		$channel_item = Channel::getInfo($channel_id);
@@ -479,9 +481,10 @@ class SystemController extends BaseController
 		fclose($fp);
 	}
 
-	protected function xmlRead($name,$action='other'){
+	protected function xmlRead($name,$path1,$path2,$action='other'){
 
-		$filePath = '/downloads/'.$action.'/'.date('Ymd').'/'.date('H').'/';
+		error_reporting(7);
+		$filePath = '/downloads/'.$action.'/'.$path1.'/'.$path2.'/';
 		if(!is_dir(public_path() . $filePath)) {
 			mkdir(public_path() . $filePath,0777,true);
 		}
