@@ -112,7 +112,7 @@ class SystemController extends BaseController
             $r = $this->unifySend($params['arr'], $params['xml']);
             $r = $this->make_return($r, 'status', $channel_item);
 //		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
-		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
+//		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
 
 			if (isset($r['statusbox'])) {
 			    $balance_arr = array();
@@ -205,9 +205,11 @@ class SystemController extends BaseController
 		$name = Input::get('name');
 		$path1 = Input::get('path1');
 		$path2 = Input::get('path2');
-
+		$channel_item['type'] = Input::get('type');
 		$xml = $this->xmlRead($name,$path1,$path2, 'status');
-		echo $xml;exit;
+//		$return_new = $this->xmlToArray($xml);
+		$r = $this->make_return($xml, 'status', $channel_item);
+		print_r($r);exit;
 
 //		$channel_item = Channel::getInfo($channel_id);
 //		if (!$channel_item) {
@@ -488,7 +490,7 @@ class SystemController extends BaseController
 		if(!is_dir(public_path() . $filePath)) {
 			mkdir(public_path() . $filePath,0777,true);
 		}
-		$fp = fopen(public_path() . $filePath . $name,'a');
+		$fp = fopen(public_path() . $filePath . $name,'r');
 		$r = fread($fp,filesize(public_path() . $filePath . $name));
 		fclose($fp);
 
