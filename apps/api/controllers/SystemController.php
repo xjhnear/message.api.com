@@ -199,6 +199,112 @@ class SystemController extends BaseController
 		return Response::json($r);
 	}
 
+
+	public function statusbak()
+	{
+		$name = Input::get('name');
+
+		$xml = $this->xmlRead($name, 'status');
+		echo $xml;exit;
+
+//		$channel_item = Channel::getInfo($channel_id);
+//		if (!$channel_item) {
+//			DB::update('update yii2_message_detail set status=4, errmsg="通道信息错误" where message_did in ('.$message_dids.')');
+//			continue;
+//		}
+
+		$params = array();
+		$params = $this->make_params($params, 'status', $channel_item);
+		$r = $this->unifySend($params['arr'], $params['xml']);
+		$r = $this->make_return($r, 'status', $channel_item);
+//		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
+		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
+
+		if (isset($r['statusbox'])) {
+			$balance_arr = array();
+			if (isset($r['statusbox']['mobile'])) {
+				$data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
+				if ($data_send) {
+					$input = array();
+					$input['message_sid'] = $data_send['message_sid'];
+					$input['status'] = $r['statusbox']['status'];
+					$input['return_time'] = strtotime($r['statusbox']['receivetime']);
+					$input['errorcode'] = $r['statusbox']['errorcode'];
+					$input['extno'] = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
+					MessageSend::save($input);
+					$input_d = array();
+					$input_d['message_did'] = $data_send['message_did'];
+					$input_d['return_time'] = time();
+					if ($r['statusbox']['status'] == 10) {
+						$input_d['status'] = 3;
+					} else {
+						$input_d['status'] = 4;
+						$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
+						$message_count = mb_strlen($detail_now[0]['content']);
+						$power = 1;
+						if ($message_count > 130) {
+							$power = 3;
+						} elseif ($message_count > 70) {
+							$power = 2;
+						} else {
+							$power = 1;
+						}
+						if (isset($balance_arr[$detail_now[0]['create_uid']])) {
+							$balance_arr[$detail_now[0]['create_uid']] += $power;
+						} else {
+							$balance_arr[$detail_now[0]['create_uid']] = $power;
+						}
+					}
+					MessageDetail::save($input_d);
+				}
+			} else {
+				foreach ($r['statusbox'] as $item) {
+					$data_send = MessageSend::getInfo($item['mobile'],$item['taskid']);
+					if ($data_send) {
+						$input = array();
+						$input['message_sid'] = $data_send['message_sid'];
+						$input['status'] = $item['status'];
+						$input['return_time'] = strtotime($item['receivetime']);
+						$input['errorcode'] = $item['errorcode'];
+						$input['extno'] = is_array($item['extno'])?'':$item['extno'];
+						MessageSend::save($input);
+						$input_d = array();
+						$input_d['message_did'] = $data_send['message_did'];
+						$input_d['return_time'] = time();
+						if ($item['status'] == 10) {
+							$input_d['status'] = 3;
+						} else {
+							$input_d['status'] = 4;
+							$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
+							$message_count = mb_strlen($detail_now[0]['content']);
+							$power = 1;
+							if ($message_count > 130) {
+								$power = 3;
+							} elseif ($message_count > 70) {
+								$power = 2;
+							} else {
+								$power = 1;
+							}
+							if (isset($balance_arr[$detail_now[0]['create_uid']])) {
+								$balance_arr[$detail_now[0]['create_uid']] += $power;
+							} else {
+								$balance_arr[$detail_now[0]['create_uid']] = $power;
+							}
+						}
+						MessageDetail::save($input_d);
+					}
+				}
+			}
+			foreach ($balance_arr as $k=>$v) {
+				DB::update('update yii2_admin set balance=balance+'.$v.' where uid ='.$k);
+				$balance_now = DB::select('select balance from yii2_admin where uid ='.$k);
+				DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$k.'","'.$v.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
+			}
+		}
+		return Response::json($r);
+	}
+
+
 	/**
 	 * 上行查询
 	 */
@@ -371,6 +477,19 @@ class SystemController extends BaseController
 		$fp = fopen(public_path() . $filePath . $action . '_' . date('YmdHis') .'.xml','a');
 		fwrite($fp, $r);
 		fclose($fp);
+	}
+
+	protected function xmlRead($name,$action='other'){
+
+		$filePath = '/downloads/'.$action.'/'.date('Ymd').'/'.date('H').'/';
+		if(!is_dir(public_path() . $filePath)) {
+			mkdir(public_path() . $filePath,0777,true);
+		}
+		$fp = fopen(public_path() . $filePath . $name,'a');
+		$r = fread($fp,filesize(public_path() . $filePath . $name));
+		fclose($fp);
+
+		return $r;
 	}
 
     protected function make_return($r, $action, $channel_item)
