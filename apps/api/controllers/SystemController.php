@@ -218,7 +218,7 @@ class SystemController extends BaseController
                     if ($data_send) {
                         $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES";
                         $extno = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
-                        $tmpstr = "'". $r['statusbox']['mobile'] ."','". $r['statusbox']['taskid'] ."','". $r['statusbox']['status'] ."','". $r['statusbox']['receivetime'] ."','". $r['statusbox']['errorcode'] ."','". $extno ."','". time() ."'";
+                        $tmpstr = "'". $r['statusbox']['mobile'] ."','". $r['statusbox']['taskid'] ."','". $r['statusbox']['status'] ."','". strtotime($r['statusbox']['receivetime']) ."','". $r['statusbox']['errorcode'] ."','". $extno ."','". time() ."'";
                         $sql .= "(".$tmpstr.")";
                         $sql = substr($sql,0,-1);   //去除最后的逗号
                         DB::insert($sql);
@@ -227,7 +227,7 @@ class SystemController extends BaseController
                     $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES";
                     foreach ($r['statusbox'] as $item) {
                         $extno = is_array($item['extno'])?'':$item['extno'];
-                        $tmpstr = "'". $item['mobile'] ."','". $item['taskid'] ."','". $item['status'] ."','". $item['receivetime'] ."','". $item['errorcode'] ."','". $extno ."','". time() ."'";
+                        $tmpstr = "'". $item['mobile'] ."','". $item['taskid'] ."','". $item['status'] ."','". strtotime($item['receivetime']) ."','". $item['errorcode'] ."','". $extno ."','". time() ."'";
                         $sql .= "(".$tmpstr."),";
                     }
                     $sql = substr($sql,0,-1);   //去除最后的逗号
@@ -594,7 +594,7 @@ WHERE aa.`status`=5';
                                 $statusbox = array();
                                 $statusbox['mobile'] = $item['phoneNumber'];
                                 $statusbox['taskid'] = $item['smsId'];
-                                $statusbox['receivetime'] = strtotime($item['revTime']);
+                                $statusbox['receivetime'] = date("Y-m-d H:i:s",strtotime($item['revTime']));
                                 $statusbox['taskid'] = $item['smsId'];
                                 $statusbox['errorcode'] = $item['statDes'];
                                 $statusbox['extno'] = '';
@@ -608,7 +608,7 @@ WHERE aa.`status`=5';
                         }
                         break;
                     case 'call':
-                        if (isset($return['subStat']) && isset($return['resDetail'])) {
+                        if (isset($return['resDetail'])) {
                             if (isset($return['resDetail']['phoneNumber'])) {
                                 $resDetail = $return['resDetail'];
                                 $return['resDetail'] = array(0=>$resDetail);
@@ -619,7 +619,7 @@ WHERE aa.`status`=5';
                                 $callbox['mobile'] = $item['phoneNumber'];
                                 $callbox['taskid'] = '';
                                 $callbox['content'] = $item['content'];
-                                $callbox['receivetime'] = strtotime($item['revTime']);
+                                $callbox['receivetime'] = date("Y-m-d H:i:s",strtotime($item['revTime']));
                                 $return_new['callbox'][] = $callbox;
                             }
                         }
