@@ -44,7 +44,7 @@ class SystemController extends BaseController
 					$data_detail = array();
 					$data_detail = MessageDetail::getList($search,1,$pageSize);
 					$message_did_arr = $phonenumber_arr = array();
-					$sql="INSERT INTO yii2_message_send (message_id,message_did,phonenumber,task_id,operator,channel_id,create_time,uid) VALUES";
+					$sql="INSERT INTO yii2_message_send (message_id,message_did,phonenumber,task_id,operator,channel_id,create_time,uid) VALUES ";
 					foreach ($data_detail as $item) {
 						$channel_id = $item['channel_id'];
 						$message_did_arr[] = $item['message_did'];
@@ -216,7 +216,7 @@ class SystemController extends BaseController
                 if (isset($r['statusbox']['mobile'])) {
                     $data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
                     if ($data_send) {
-                        $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES";
+                        $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES ";
                         $extno = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
                         $tmpstr = "'". $r['statusbox']['mobile'] ."','". $r['statusbox']['taskid'] ."','". $r['statusbox']['status'] ."','". strtotime($r['statusbox']['receivetime']) ."','". $r['statusbox']['errorcode'] ."','". $extno ."','". time() ."'";
                         $sql .= "(".$tmpstr.")";
@@ -224,7 +224,7 @@ class SystemController extends BaseController
                         DB::insert($sql);
                     }
                 } else {
-                    $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES";
+                    $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES ";
                     foreach ($r['statusbox'] as $item) {
                         $extno = is_array($item['extno'])?'':$item['extno'];
                         $tmpstr = "'". $item['mobile'] ."','". $item['taskid'] ."','". $item['status'] ."','". strtotime($item['receivetime']) ."','". $item['errorcode'] ."','". $extno ."','". time() ."'";
@@ -248,13 +248,13 @@ class SystemController extends BaseController
         $max_rid = DB::select($sql);
         $max_rid = $max_rid[0]['max_rid'];
 
-        $sql2 = 'UPDATE yii2_message_send a
-INNER JOIN yii2_message_return b
-ON a.task_id = b.taskid AND a.phonenumber=b.phone
-SET a.errorcode = b.errorcode,
-a.status = b.status,
-a.extno = b.extno,
-a.return_time = b.retime
+        $sql2 = 'UPDATE yii2_message_send a 
+INNER JOIN yii2_message_return b 
+ON a.task_id = b.taskid AND a.phonenumber=b.phone 
+SET a.errorcode = b.errorcode, 
+a.status = b.status, 
+a.extno = b.extno, 
+a.return_time = b.retime 
 WHERE a.`status`=0 AND b.is_do = 0 AND b.rid <= '.$max_rid;
         DB::update($sql2);
 
@@ -392,13 +392,13 @@ WHERE aa.`status`=5';
 					} else {
 						$uid = 0;
 					}
-					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time,uid) VALUES";
+					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time,uid) VALUES ";
 					$tmpstr = "'". $r['callbox']['mobile'] ."','". $r['callbox']['taskid'] ."','". $r['callbox']['content'] ."','". strtotime($r['callbox']['receivetime']) ."','". time() ."','". $uid ."'";
 					$sql .= "(".$tmpstr.")";
 					$sql = substr($sql,0,-1);   //去除最后的逗号
 					DB::insert($sql);
 				} else {
-					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time,uid) VALUES";
+					$sql="INSERT INTO yii2_message_call (phonenumber,task_id,content,return_time,create_time,uid) VALUES ";
 					foreach ($r['callbox'] as $item) {
 						$data_send = MessageSend::getInfo2($item['mobile'],$item['taskid']);
 						if ($data_send) {
@@ -675,12 +675,12 @@ WHERE aa.`status`=5';
 		} else {
 			$start = mktime(0,0,0,date("m"),date("d")-4,date("Y"));
 			$end = mktime(0,0,0,date("m"),date("d")-3,date("Y"));
-			$sql="SELECT a.message_id  FROM
-(SELECT DISTINCT message_id
-FROM yii2_message_detail WHERE `status`=4) a
-INNER JOIN
-(SELECT DISTINCT message_id
-FROM yii2_message_send WHERE create_time<".$end." AND `status`=0) b
+			$sql="SELECT a.message_id  FROM 
+(SELECT DISTINCT message_id 
+FROM yii2_message_detail WHERE `status`=4) a 
+INNER JOIN 
+(SELECT DISTINCT message_id 
+FROM yii2_message_send WHERE create_time<".$end." AND `status`=0) b 
 ON a.message_id = b.message_id";
 			$message_id = DB::select($sql);
 			if ($message_id) {
@@ -723,15 +723,15 @@ ON a.message_id = b.message_id";
 		$sql = 'SELECT * FROM yii2_report WHERE c_date = "'.$c_date.'"';
 		$info = DB::select($sql);
 		if (!$info) {
-			$sql="select a.uid,IFNULL(count,0) as count,IFNULL(count_success,0) as count_success from yii2_admin as a
-LEFT JOIN
+			$sql="select a.uid,IFNULL(count,0) as count,IFNULL(count_success,0) as count_success from yii2_admin as a 
+LEFT JOIN 
 (
-select count(*) as count,uid from yii2_message_send where create_time between ".$start." and ".$end." group by uid
-) as b on a.uid=b.uid
-LEFT JOIN
+select count(*) as count,uid from yii2_message_send where create_time between ".$start." and ".$end." group by uid 
+) as b on a.uid=b.uid 
+LEFT JOIN 
 (
-select count(*) as count_success,uid from yii2_message_send where status=10 and create_time between ".$start." and ".$end." group by uid
-) as c on a.uid=c.uid
+select count(*) as count_success,uid from yii2_message_send where status=10 and create_time between ".$start." and ".$end." group by uid 
+) as c on a.uid=c.uid 
 where a.role = 1";
 			$send = DB::select($sql);
 			foreach ($send as $item) {
@@ -744,19 +744,19 @@ where a.role = 1";
 				Report::save($input);
 			}
 
-			$sql="select a.uid,IFNULL(count_recharge,0) as count_recharge,IFNULL(count_consume,0) as count_consume,IFNULL(count_fail,0) as count_fail from yii2_admin as a
-LEFT JOIN
+			$sql="select a.uid,IFNULL(count_recharge,0) as count_recharge,IFNULL(count_consume,0) as count_consume,IFNULL(count_fail,0) as count_fail from yii2_admin as a 
+LEFT JOIN 
 (
-select sum(change_count) as count_recharge,uid from yii2_account_detail where remark='充值' and create_time between ".$start." and ".$end." group by uid
-) as b on a.uid=b.uid
-LEFT JOIN
+select sum(change_count) as count_recharge,uid from yii2_account_detail where remark='充值' and create_time between ".$start." and ".$end." group by uid 
+) as b on a.uid=b.uid 
+LEFT JOIN 
 (
-select sum(change_count) as count_consume,uid from yii2_account_detail where change_type=2 and create_time between ".$start." and ".$end." group by uid
-) as c on a.uid=c.uid
-LEFT JOIN
+select sum(change_count) as count_consume,uid from yii2_account_detail where change_type=2 and create_time between ".$start." and ".$end." group by uid 
+) as c on a.uid=c.uid 
+LEFT JOIN 
 (
-select sum(change_count) as count_fail,uid from yii2_account_detail where remark='返还' and create_time between ".$start." and ".$end." group by uid
-) as d on a.uid=d.uid
+select sum(change_count) as count_fail,uid from yii2_account_detail where remark='返还' and create_time between ".$start." and ".$end." group by uid 
+) as d on a.uid=d.uid 
 where a.role = 1";
 			$send = DB::select($sql);
 			foreach ($send as $item) {
