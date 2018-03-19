@@ -11,6 +11,6 @@ return array(
     'action_arr'=>array(
         '1'=>array('sms'=>'sms.aspx', 'status'=>'statusApi.aspx', 'call'=>'callApi.aspx'),
         '2'=>array('sms'=>'http/submitSms', 'status'=>'http/getReportWithTime', 'call'=>'http/getReply'),
-        '3'=>array('sms'=>'MessageTransferWebAppJs/servlet/messageTransferServiceServletByXml', 'status'=>'MessageTransferWebAppJs/servlet/messageTransferServiceServletByXml', 'call'=>'MessageTransferWebAppJs/servlet/messageTransferServiceServletByXml')
+        '3'=>array('sms'=>'SendSms.asp', 'status'=>'GetReport.asp', 'call'=>'GetMessage.asp')
     ),
 );

@@ -514,20 +514,18 @@ WHERE aa.`status`=5';
             case 3:
                 $action_arr = Config::get('sms.action_arr');
                 $params_new['url'] = $channel_item['url'].'/'.$action_arr[$channel_item['type']][$action];
-                $params_new['userName'] = $channel_item['account'];
-                $params_new['passWord'] = $channel_item['password'];
+                $params_new['Account'] = $channel_item['account'];
+                $params_new['Password'] = $channel_item['password'];
                 switch ($action) {
                     case 'sms':
-                        $params_new['cmd'] = 'sendBatchMessage';
-                        $params_new['mobilePhones'] = $params['mobile'];
-                        $params_new['body'] = $params['content'];
-                        $params_new['scheduleDateStr'] = date('yyyyMMddHHmmss', $params['sendTime']);
+                        $params_new['Phones'] = $params['mobile'];
+                        $params_new['Content'] = iconv("UTF-8","GB2312",$params['content']);
+                        $params_new['Channel'] = 1;
+                        $params_new['SendTime'] = date('yyyyMMddHHmmss', $params['sendTime']);
                         break;
                     case 'status':
-                        $params_new['cmd'] = 'query';
                         break;
                     case 'call':
-                        $params_new['cmd'] = 'query';
                         break;
                 }
                 break;
@@ -595,7 +593,6 @@ WHERE aa.`status`=5';
                                 $statusbox['mobile'] = $item['phoneNumber'];
                                 $statusbox['taskid'] = $item['smsId'];
                                 $statusbox['receivetime'] = date("Y-m-d H:i:s",strtotime($item['revTime']));
-                                $statusbox['taskid'] = $item['smsId'];
                                 $statusbox['errorcode'] = $item['statDes'];
                                 $statusbox['extno'] = '';
                                 if ($item['stat'] == 'r:000') {
@@ -627,9 +624,52 @@ WHERE aa.`status`=5';
                 }
                 break;
             case 3:
-                echo $r;exit;
-                $return = $this->xmlToArray($r);
-                print_r($return);exit;
+
+                switch ($action) {
+                    case 'sms':
+                        if ($r>0) {
+                            $return_new['returnstatus'] = 'Success';
+                            $return_new['taskID'] = $r;
+                        } else {
+                            $return_new['returnstatus'] = 'Faild';
+                            $return_new['message'] = $r;
+                        }
+                        break;
+                    case 'status':
+                        if ($r>0) {
+                            $return['resDetail'] = explode('||||', $r);
+                            foreach ($return['resDetail'] as $item_str) {
+                                $item = explode('$$$$', $item_str);
+                                $statusbox = array();
+                                $statusbox['mobile'] = $item[1];
+                                $statusbox['taskid'] = $item[0];
+                                $statusbox['receivetime'] = date("Y-m-d H:i:s",strtotime($item[2]));
+                                $statusbox['errorcode'] = $item[4];
+                                $statusbox['extno'] = '';
+                                if ($item[3] == '成功') {
+                                    $statusbox['status'] = 10;
+                                } else {
+                                    $statusbox['status'] = 20;
+                                }
+                                $return_new['statusbox'][] = $statusbox;
+                            }
+                        }
+                        break;
+                    case 'call':
+                        if ($r>0) {
+                            $return['resDetail'] = explode('||||', $r);
+                            foreach ($return['resDetail'] as $item_str) {
+                                $item = explode('$$$$', $item_str);
+                                $callbox = array();
+                                $callbox['mobile'] = $item[0];
+                                $callbox['taskid'] = '';
+                                $callbox['content'] = $item[1];
+                                $callbox['receivetime'] = date("Y-m-d H:i:s",strtotime($item[2]));
+                                $return_new['callbox'][] = $callbox;
+                            }
+                        }
+                        break;
+                }
                 break;
         }
         return $return_new;
