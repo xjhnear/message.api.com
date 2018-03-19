@@ -677,7 +677,7 @@ WHERE aa.`status`=5';
 			$end = mktime(0,0,0,date("m"),date("d")-3,date("Y"));
 			$sql="SELECT a.message_id  FROM 
 (SELECT DISTINCT message_id 
-FROM yii2_message_detail WHERE `status`=4) a 
+FROM yii2_message_detail WHERE `status`=4 AND is_return = 0) a
 INNER JOIN 
 (SELECT DISTINCT message_id 
 FROM yii2_message_send WHERE create_time<".$end." AND `status`=0) b 
@@ -685,7 +685,7 @@ ON a.message_id = b.message_id";
 			$message_id = DB::select($sql);
 			if ($message_id) {
 				foreach ($message_id as $item) {
-					$sql_count="select count(*) as num,create_uid,content from yii2_message_detail where status=4 and message_id =".$item['message_id']." group by content,create_uid";
+					$sql_count="select count(*) as num,create_uid,content from yii2_message_detail where status=4 AND is_return = 0 and message_id =".$item['message_id']." group by content,create_uid";
 					$item_count = DB::select($sql_count);
 					$balance = $create_uid = 0;
 					foreach ($item_count as $item_c) {
@@ -701,7 +701,7 @@ ON a.message_id = b.message_id";
 						$create_uid = $item_c['create_uid'];
 						$balance += $item_c['num'] * $power;
 					}
-//					DB::update('update yii2_message_detail set status=4, errmsg="超时" where status=5 and message_id ='.$item['message_id']);
+					DB::update('update yii2_message_detail set is_return=1 where status=4 AND is_return = 0 and message_id ='.$item['message_id']);
 					DB::update('update yii2_admin set balance=balance+'.$balance.' where uid ='.$create_uid);
 					$balance_now = DB::select('select balance from yii2_admin where uid ='.$create_uid);
 					DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$create_uid.'","'.$balance.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
