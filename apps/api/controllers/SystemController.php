@@ -521,7 +521,7 @@ WHERE aa.`status`=5';
                         $params_new['Phones'] = $params['mobile'];
                         $params_new['Content'] = iconv("UTF-8","GB2312",$params['content']);
                         $params_new['Channel'] = 1;
-                        $params_new['SendTime'] = date('yyyyMMddHHmmss', $params['sendTime']);
+                        $params_new['SendTime'] = date('YmdHis', $params['sendTime']);
                         break;
                     case 'status':
                         break;
