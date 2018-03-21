@@ -71,7 +71,7 @@ class SystemController extends BaseController
 						continue;
 					}
                     $params = $this->make_params($params, 'sms', $channel_item);
-					$r = $this->unifySend($params['arr'], $params['xml']);
+					$r = $this->unifySend($params['arr'], $params['xml'], $channel_item);
                     $r = $this->make_return($r, 'sms', $channel_item);
 					if ($r['returnstatus'] == 'Faild') {
 						DB::update('update yii2_message_detail set status=4, errmsg="'.$r['message'].'" where message_did in ('.$message_dids.')');
@@ -109,7 +109,7 @@ class SystemController extends BaseController
 		foreach ($channel_list as $channel_item) {
 			$params = array();
             $params = $this->make_params($params, 'status', $channel_item);
-            $r = $this->unifySend($params['arr'], $params['xml']);
+            $r = $this->unifySend($params['arr'], $params['xml'], $channel_item);
             $r = $this->make_return($r, 'status', $channel_item);
 //		$r = array('statusbox'=> array('0' => array('mobile' => '18301376919', 'taskid' => 8235059, 'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ,'1' => array ( 'mobile' => '18301376919', 'taskid' => 8235032 ,'status' => 20, 'receivetime' => '2018-02-23 15:36:05', 'errorcode' => '终止', 'extno' => 8710 ) ) );
 //		$r = array('statusbox'=> array( 'mobile' => '13329050908', 'taskid' => 8235060, 'status' => 20, 'receivetime' => '2018-02-23 15:37:16', 'errorcode' => '终止', 'extno' => Array ( ) ) );
@@ -208,7 +208,7 @@ class SystemController extends BaseController
         foreach ($channel_list as $channel_item) {
             $params = array();
             $params = $this->make_params($params, 'status', $channel_item);
-            $r = $this->unifySend($params['arr'], $params['xml']);
+            $r = $this->unifySend($params['arr'], $params['xml'], $channel_item);
             $r = $this->make_return($r, 'status', $channel_item);
 
             if (isset($r['statusbox'])) {
@@ -381,7 +381,7 @@ WHERE aa.`status`=5';
 		foreach ($channel_list as $channel_item) {
             $params = array();
             $params = $this->make_params($params, 'call', $channel_item);
-            $r = $this->unifySend($params['arr'], $params['xml']);
+            $r = $this->unifySend($params['arr'], $params['xml'], $channel_item);
             $r = $this->make_return($r, 'call', $channel_item);
 
 			if (isset($r['callbox'])) {
@@ -434,7 +434,7 @@ WHERE aa.`status`=5';
 		}
 	}
 
-	protected function unifySend($params, $xml='')
+	protected function unifySend($params, $xml='', $channel_item)
 	{
 //		$url = 'http://139.196.58.248:5577/'.$action.'.aspx';
 //		$userid = '8710';
@@ -445,7 +445,9 @@ WHERE aa.`status`=5';
         foreach ( $params as $k => $v )
         {
 //            $o.= "$k=" . urlencode(iconv('UTF-8', 'GB2312', $v)). "&" ;
-            if ($v == '[XML]') {
+			if ($channel_item['type'] == 3 && $k == 'Account') {
+				$o.= "$k=" . iconv("UTF-8","GB2312",$v). "&" ;
+			} elseif ($v == '[XML]') {
                 $o.= "$k=" . $xml. "&" ;
             } else {
                 $o.= "$k=" . urlencode($v). "&" ;
@@ -560,16 +562,16 @@ WHERE aa.`status`=5';
 
     protected function make_return($r, $action, $channel_item)
     {
-
-		$this->xmlSave($r, $action);
 		$return_new = array();
         switch ($channel_item['type']) {
             case 1:
+				$this->xmlSave($r, $action);
                 $return_new = $this->xmlToArray($r);
                 break;
             case 2:
 //                $r = '<ReportMessageRes><resDetail><revTime>2018-03-04 21:55:41</revTime><phoneNumber>13917438216</phoneNumber><smsId>M1519630974</smsId><stat>r:000</stat><statDes>DELIVRD</statDes></resDetail><subStat>r:000</subStat><subStatDes>获取状态报告记录数:1</subStatDes></ReportMessageRes>';
-                $return = $this->xmlToArray($r);
+				$this->xmlSave($r, $action);
+				$return = $this->xmlToArray($r);
 
                 switch ($action) {
                     case 'sms':
@@ -624,7 +626,9 @@ WHERE aa.`status`=5';
                 }
                 break;
             case 3:
-
+//				$r = '1532690$$$$13579910573$$$$2018/3/20 14:56:00$$$$失败$$$$DB00108||||1532690$$$$13916058395$$$$2018/3/20 13:41:00$$$$失败$$$$MK:1008||||1532690$$$$13579915886$$$$2018/3/20 13:58:00$$$$失败$$$$DB00108||||1532690$$$$13579923622$$$$2018/3/20 15:05:00$$$$失败$$$$DB00108||||1532699$$$$18838818710$$$$2018/3/20 15:06:00$$$$失败$$$$MK:1008||||1532699$$$$18753920284$$$$2018/3/20 15:06:00$$$$失败$$$$MK:100D||||1532699$$$$18705725030$$$$2018/3/20 15:37:00$$$$失败$$$$DB00108||||1532699$$$$18722384318$$$$2018/3/20 15:37:00$$$$失败$$$$DB00108||||1532699$$$$18784590699$$$$2018/3/20 15:06:00$$$$失败$$$$MK:1008||||1532699$$$$18769552289$$$$2018/3/20 15:06:00$$$$失败$$$$MK:1008||||1532699$$$$18728332290$$$$2018/3/20 15:06:00$$$$失败$$$$MK:1008||||1532699$$$$18781482482$$$$2018/3/20 15:06:00$$$$失败$$$$MK:1008||||1532699$$$$18750823234$$$$2018/3/20 15:06:00$$$$失败$$$$MK:1008||||1532699$$$$18779428785$$$$2018/3/20 16:08:00$$$$失败$$$$DB00108||||1532699$$$$13916058395$$$$2018/3/20 15:06:00$$$$失败$$$$MK:1008';
+				$r = mb_convert_encoding($r, "utf-8", "gb2312");
+				$this->xmlSave($r, $action);
                 switch ($action) {
                     case 'sms':
                         if ($r>0) {
