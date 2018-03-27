@@ -84,6 +84,9 @@ class ApiController extends BaseController
             $r['remark'] = '短信内容不能为空';
             return Response::json($r);
         }
+        if ($sendTime=="") {
+            $sendTime = time();
+        }
         $params = array(
             'action'=>'checkkeyword',
             'content'=>$content
