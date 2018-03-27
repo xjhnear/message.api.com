@@ -9,7 +9,7 @@ echo "tar：$name => $name.tar.gz";
 tar zcf call/$name.tar.gz call/$name/;
 if [ -f call/$name.tar.gz ]
 then
-echo "rm：all.log.$name-$i";
+echo "rm：$name/";
 rm -rf call/$name/;
 fi;
 sleep 5;
@@ -20,7 +20,7 @@ echo "tar：$name => $name.tar.gz";
 tar zcf sms/$name.tar.gz sms/$name/;
 if [ -f sms/$name.tar.gz ]
 then
-echo "rm：all.log.$name-$i";
+echo "rm：$name/";
 rm -rf sms/$name/;
 fi;
 sleep 5;
@@ -31,7 +31,7 @@ echo "tar：$name => $name.tar.gz";
 tar zcf status/$name.tar.gz status/$name/;
 if [ -f status/$name.tar.gz ]
 then
-echo "rm：all.log.$name-$i";
+echo "rm：$name/";
 rm -rf status/$name/;
 fi;
 sleep 5;
