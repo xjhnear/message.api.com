@@ -110,6 +110,15 @@ class ApiController extends BaseController
         $input['phonenumbers_json'] = '';
         $input['count'] = $count;
         $input['content'] = $content;
+        $message_count = mb_strlen($content);
+        $power = 1;
+        if ($message_count > 130) {
+            $power = 3;
+        } elseif ($message_count > 70) {
+            $power = 2;
+        } else {
+            $power = 1;
+        }
         $input['content_json'] = json_encode(array('unicom'=>$content,'mobile'=>'','telecom'=>''));
         $input['create_time'] = time();
         $input['send_time'] = $sendTime;
@@ -117,7 +126,7 @@ class ApiController extends BaseController
         $input['create_uid'] = $info['uid'];
         $message_id = MessageList::save($input);
 
-        $cost = $count * $info['coefficient'];
+        $cost = $count * $power;
         $input_u = array();
         $input_u['uid'] = $info['uid'];
         $input_u['balance'] = $info['balance'] - $cost;
