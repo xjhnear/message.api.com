@@ -77,7 +77,7 @@ echo '开始执行'$endDate'之前'$day'天的日志打包操作！';
 fi;
 for((k=0;k<$day+1;k++));
 do
-tim=`date '+%Y-%m-%d' -d "-$k day $endDate"`;
+tim=`date '+%Y%m%d' -d "-$k day $endDate"`;
 c_logcompress $tim;
 done
 c_exit 0;
