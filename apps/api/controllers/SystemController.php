@@ -762,6 +762,7 @@ ON a.message_id = b.message_id";
     {
 
         $start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
+		$start3 = mktime(0,0,0,date("m"),date("d")-3,date("Y"));
         $end = mktime(0,0,0,date("m"),date("d"),date("Y"));
         $c_date = date("Y-m-d",strtotime("-1 day"));
 		$sql = 'SELECT * FROM yii2_report WHERE c_date = "'.$c_date.'"';
@@ -787,6 +788,14 @@ where a.role = 1";
 				$input['create_time'] = time();
 				Report::save($input);
 			}
+
+			$sql_1 = "update yii2_report b
+INNER JOIN
+(select FROM_UNIXTIME(create_time,'%Y-%m-%d') as c_date,count(*) as count_success,uid from yii2_message_send where status=10 and create_time between ".$start3." and ".$end." group by c_date,uid) a
+ON a.c_date=b.c_date AND a.uid = b.uid
+SET b.success_count = a.count_success
+where UNIX_TIMESTAMP(b.c_date) between between ".$start3." and ".$end."";
+			DB::update($sql_1);
 
 			$sql="select a.uid,IFNULL(count_recharge,0) as count_recharge,IFNULL(count_consume,0) as count_consume,IFNULL(count_fail,0) as count_fail from yii2_admin as a 
 LEFT JOIN 
