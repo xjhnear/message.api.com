@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Config;
 use Youxiduo\System\MessageService;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
+use Youxiduo\System\Model\MessageListDetail;
 use Youxiduo\System\Model\MessageSend;
 use Youxiduo\System\Model\Channel;
 use Youxiduo\System\Model\Account;
@@ -27,7 +28,8 @@ class SystemController extends BaseController
 		$input_l['status'] = 5;
 		MessageList::save($input_l);
 		$data_list = MessageList::getInfoById($search['message_id']);
-		$data_list['content'] = json_decode($data_list['content_json'],true);
+		$data_list_detail = MessageListDetail::getInfoById($search['message_id']);
+		$data_list['content'] = json_decode($data_list_detail['content_json'],true);
 		$content_arr['1'] =  $data_list['content']['unicom'];
 		$content_arr['2'] =  ($data_list['content']['mobile']<>'')?$data_list['content']['mobile']:$data_list['content']['unicom'];
 		$content_arr['3'] =  ($data_list['content']['telecom']<>'')?$data_list['content']['telecom']:$data_list['content']['unicom'];

@@ -7,6 +7,7 @@ use Youxiduo\System\Model\Admin;
 use Youxiduo\System\Model\MessageSend;
 use Youxiduo\System\Model\MessageDetail;
 use Youxiduo\System\Model\MessageList;
+use Youxiduo\System\Model\MessageListDetail;
 use Youxiduo\System\Model\AccountDetail;
 use Youxiduo\System\Model\MessageCall;
 //use Youxiduo\Api\AdminService;
@@ -109,8 +110,8 @@ class ApiController extends BaseController
 
         $input = array();
         $input['message_code'] = 'M'.time();
-        $input['phonenumbers'] = $mobile;
-        $input['phonenumbers_json'] = '';
+        $input_ld['phonenumbers'] = $mobile;
+        $input_ld['phonenumbers_json'] = '';
         $input['count'] = $count;
         $input['content'] = $content;
         $message_count = mb_strlen($content);
@@ -122,12 +123,14 @@ class ApiController extends BaseController
         } else {
             $power = 1;
         }
-        $input['content_json'] = json_encode(array('unicom'=>$content,'mobile'=>'','telecom'=>''));
+        $input_ld['content_json'] = json_encode(array('unicom'=>$content,'mobile'=>'','telecom'=>''));
         $input['create_time'] = time();
         $input['send_time'] = $sendTime;
         $input['create_name'] = $info['username'];
         $input['create_uid'] = $info['uid'];
         $message_id = MessageList::save($input);
+        $input_ld['message_id'] = $message_id;
+        MessageListDetail::save($input_ld);
 
         $cost = $count * $power;
         $input_u = array();
