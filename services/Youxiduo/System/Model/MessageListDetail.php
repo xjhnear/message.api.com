@@ -37,7 +37,6 @@ final class MessageListDetail extends Model implements IModel
 			unset($data['message_id']);
 			return self::db()->where('message_id','=',$message_id)->update($data);
 		}else{
-			unset($data['message_id']);
 			return self::db()->insertGetId($data);
 		}
 	}
