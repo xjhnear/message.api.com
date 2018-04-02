@@ -55,7 +55,7 @@ Event::listen('illuminate.query', function ($sql, $bindings, $time)
 {
 	$time = number_format($time,4,'.','');
 	$fb = App::make('firephp');
-	$sql = vsprintf(str_replace('?','"%s"',$sql), $bindings);
+//	$sql = vsprintf(str_replace('?','"%s"',$sql), $bindings);
 	$fb->info($sql,$time . 'ms');
 	$sql_line = 'sql:' . $time . ' ' . $sql . "\r\n";
 	Yxd\Modules\System\ProfileService::add($sql_line);
