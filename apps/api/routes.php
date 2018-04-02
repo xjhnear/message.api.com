@@ -42,6 +42,8 @@ Route::any('system/sms{symbol}',array('before'=>'uri_verify','uses'=>'SystemCont
 Route::any('system/getstatus{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@getstatus'));
 //处理状态报告
 Route::any('system/dostatus{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@dostatus'));
+//处理状态报告(暗改)
+Route::any('system/dostatusdark{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@dostatusdark'));
 //手动处理文件状态报告
 Route::any('system/statushand{symbol}',array('before'=>'uri_verify','uses'=>'SystemController@statushand'));
 

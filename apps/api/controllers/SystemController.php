@@ -29,6 +29,21 @@ class SystemController extends BaseController
 		MessageList::save($input_l);
 		$data_list = MessageList::getInfoById($search['message_id']);
 		$data_list_detail = MessageListDetail::getInfoById($search['message_id']);
+		$rate_dark = DB::select('select rate_dark from yii2_admin where uid ='.$data_list['create_uid']);
+		$rate_dark_v = 1;
+		if ($rate_dark) {
+			if ($rate_dark[0]['rate_dark']>0 && $rate_dark[0]['rate_dark']<1) {
+				$rate_dark_v = $rate_dark[0]['rate_dark'];
+			}
+		}
+		$dark_arr = array();$dark_normal = $dark_do = 0;
+		if ($data_list['count'] >= 5000 && $rate_dark_v <> 1) {
+			$dark_normal = round($data_list['count'] * $rate_dark_v);
+			$dark_do = $data_list['count'] - $dark_normal;
+			array_pad($dark_arr,$dark_do,1);
+			array_pad($dark_arr,$dark_normal,0);
+			shuffle($dark_arr);
+		}
 		$data_list['content'] = json_decode($data_list_detail['content_json'],true);
 		$content_arr['1'] =  $data_list['content']['unicom'];
 		$content_arr['2'] =  ($data_list['content']['mobile']<>'')?$data_list['content']['mobile']:$data_list['content']['unicom'];
@@ -46,16 +61,20 @@ class SystemController extends BaseController
 					$data_detail = array();
 					$data_detail = MessageDetail::getList($search,1,$pageSize);
 					$message_did_arr = $phonenumber_arr = array();
-					$sql="INSERT INTO yii2_message_send (message_id,message_did,phonenumber,task_id,operator,channel_id,create_time,uid) VALUES ";
+					$sql="INSERT INTO yii2_message_send (message_id,message_did,phonenumber,task_id,operator,channel_id,create_time,uid,is_dark) VALUES ";
 					foreach ($data_detail as $item) {
+						$is_dark = array_pop($dark_arr);
+						if ($is_dark == NULL) $is_dark = 0;
 						$channel_id = $item['channel_id'];
 						$message_did_arr[] = $item['message_did'];
-						$phonenumber_arr[] = $item['phonenumber'];
+						if ($is_dark == 0) {
+							$phonenumber_arr[] = $item['phonenumber'];
+						}
 						$input_d = array();
 						$input_d['message_did'] = $item['message_did'];
 						$input_d['status'] = 5;
 						MessageDetail::save($input_d);
-						$tmpstr = "'". $search['message_id'] ."','". $item['message_did'] ."','". $item['phonenumber'] ."','[TASKID]','". $operator ."','". $item['channel_id'] ."','". time() ."','". $item['create_uid'] ."'";
+						$tmpstr = "'". $search['message_id'] ."','". $item['message_did'] ."','". $item['phonenumber'] ."','[TASKID]','". $operator ."','". $item['channel_id'] ."','". time() ."','". $item['create_uid'] ."','". $is_dark ."'";
 						$sql .= "(".$tmpstr."),";
 					}
 					$message_dids = implode(',',$message_did_arr);
@@ -276,6 +295,34 @@ WHERE aa.`status`=5';
 
         Response::json(array('true'));
     }
+
+	/**
+	 * 处理状态报告(暗改)
+	 */
+	public function dostatusdark()
+	{
+		$sql = 'SELECT MAX(message_sid) as max_sid,MIN(message_sid) as min_sid FROM yii2_message_send WHERE is_dark = 1 AND `status`=0 ';
+		$max_min_sid = DB::select($sql);
+		$max_sid = $max_min_sid[0]['max_sid'];
+		$min_sid = $max_min_sid[0]['min_sid'];
+
+		$sql2 = 'UPDATE yii2_message_send a
+SET a.status = 10,
+a.return_time = '.time().'
+WHERE a.`status`=0 AND a.is_dark = 1 AND a.message_sid <= '.$max_sid.' AND a.message_sid >= '.$min_sid;
+		DB::update($sql2);
+
+		$sql3 = 'UPDATE yii2_message_detail aa
+INNER JOIN
+(SELECT a.message_did,a.status FROM yii2_message_send a
+WHERE a.is_dark = 1 AND a.message_sid <= '.$max_sid.' AND a.message_sid >= '.$min_sid.' ) bb
+ON aa.message_did = bb.message_did
+SET aa.status = case when (bb.status<>10) then 4 else 3 end
+WHERE aa.`status`=5';
+		DB::update($sql3);
+
+		Response::json(array('true'));
+	}
 
     /**
      * 手动处理文件状态报告
