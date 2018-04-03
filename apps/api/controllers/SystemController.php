@@ -267,19 +267,20 @@ class SystemController extends BaseController
     {
         $sql = 'SELECT MAX(rid) as max_rid FROM yii2_message_return WHERE is_do = 0';
         $max_rid = DB::select($sql);
-        $max_rid = $max_rid[0]['max_rid'];
+		if ($max_rid) {
+			$max_rid = $max_rid[0]['max_rid'];
 
-        $sql2 = 'UPDATE yii2_message_send a 
-INNER JOIN yii2_message_return b 
-ON a.task_id = b.taskid AND a.phonenumber=b.phone 
-SET a.errorcode = b.errorcode, 
-a.status = b.status, 
-a.extno = b.extno, 
-a.return_time = b.retime 
+			$sql2 = 'UPDATE yii2_message_send a
+INNER JOIN yii2_message_return b
+ON a.task_id = b.taskid AND a.phonenumber=b.phone
+SET a.errorcode = b.errorcode,
+a.status = b.status,
+a.extno = b.extno,
+a.return_time = b.retime
 WHERE a.`status`=0 AND b.is_do = 0 AND b.rid <= '.$max_rid;
-        DB::update($sql2);
+			DB::update($sql2);
 
-        $sql3 = 'UPDATE yii2_message_detail aa
+			$sql3 = 'UPDATE yii2_message_detail aa
 INNER JOIN
 (SELECT a.message_did,b.status FROM yii2_message_send a
 INNER JOIN yii2_message_return b
@@ -288,10 +289,11 @@ WHERE b.is_do = 0 AND b.rid <= '.$max_rid.' ) bb
 ON aa.message_did = bb.message_did
 SET aa.status = case when (bb.status<>10) then 4 else 3 end
 WHERE aa.`status`=5';
-        DB::update($sql3);
+			DB::update($sql3);
 
-        $sql4 = 'UPDATE yii2_message_return SET is_do = 1 WHERE is_do = 0 AND rid <= '.$max_rid;
-        DB::update($sql4);
+			$sql4 = 'UPDATE yii2_message_return SET is_do = 1 WHERE is_do = 0 AND rid <= '.$max_rid;
+			DB::update($sql4);
+		}
 
         Response::json(array('true'));
     }
@@ -301,25 +303,27 @@ WHERE aa.`status`=5';
 	 */
 	public function dostatusdark()
 	{
-		$sql = 'SELECT MAX(message_sid) as max_sid,MIN(message_sid) as min_sid FROM yii2_message_send WHERE is_dark = 1 AND `status`=0 ';
+		$sql = 'SELECT MAX(message_sid) as max_sid,MIN(message_sid) as min_sid FROM yii2_message_send WHERE is_dark = 1 AND `status`=0  AND DATE_SUB(CURDATE(), INTERVAL 1 DAY) > date(from_unixtime(create_time)) ';
 		$max_min_sid = DB::select($sql);
-		$max_sid = $max_min_sid[0]['max_sid'];
-		$min_sid = $max_min_sid[0]['min_sid'];
+		if ($max_min_sid) {
+			$max_sid = $max_min_sid[0]['max_sid'];
+			$min_sid = $max_min_sid[0]['min_sid'];
 
-		$sql2 = 'UPDATE yii2_message_send a
+			$sql2 = 'UPDATE yii2_message_send a
 SET a.status = 10,
 a.return_time = '.time().'
 WHERE a.`status`=0 AND a.is_dark = 1 AND a.message_sid <= '.$max_sid.' AND a.message_sid >= '.$min_sid;
-		DB::update($sql2);
+			DB::update($sql2);
 
-		$sql3 = 'UPDATE yii2_message_detail aa
+			$sql3 = 'UPDATE yii2_message_detail aa
 INNER JOIN
 (SELECT a.message_did,a.status FROM yii2_message_send a
 WHERE a.is_dark = 1 AND a.message_sid <= '.$max_sid.' AND a.message_sid >= '.$min_sid.' ) bb
 ON aa.message_did = bb.message_did
 SET aa.status = case when (bb.status<>10) then 4 else 3 end
 WHERE aa.`status`=5';
-		DB::update($sql3);
+			DB::update($sql3);
+		}
 
 		Response::json(array('true'));
 	}
@@ -329,95 +333,15 @@ WHERE aa.`status`=5';
      */
 	public function statushand()
 	{
-		$name = Input::get('name');
-		$path1 = Input::get('path1');
-		$path2 = Input::get('path2');
-		$channel_item['type'] = Input::get('type');
-		$xml = $this->xmlRead($name,$path1,$path2, 'status');
-		$r = $this->make_return($xml, 'status', $channel_item);
-
-		if (isset($r['statusbox'])) {
-			$balance_arr = array();
-			if (isset($r['statusbox']['mobile'])) {
-				$data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
-				if ($data_send) {
-					$input = array();
-					$input['message_sid'] = $data_send['message_sid'];
-					$input['status'] = $r['statusbox']['status'];
-					$input['return_time'] = strtotime($r['statusbox']['receivetime']);
-					$input['errorcode'] = $r['statusbox']['errorcode'];
-					$input['extno'] = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
-					MessageSend::save($input);
-					$input_d = array();
-					$input_d['message_did'] = $data_send['message_did'];
-					$input_d['return_time'] = time();
-					if ($r['statusbox']['status'] == 10) {
-						$input_d['status'] = 3;
-					} else {
-						$input_d['status'] = 4;
-//						$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
-//						$message_count = mb_strlen($detail_now[0]['content']);
-//						$power = 1;
-//						if ($message_count > 130) {
-//							$power = 3;
-//						} elseif ($message_count > 70) {
-//							$power = 2;
-//						} else {
-//							$power = 1;
-//						}
-//						if (isset($balance_arr[$detail_now[0]['create_uid']])) {
-//							$balance_arr[$detail_now[0]['create_uid']] += $power;
-//						} else {
-//							$balance_arr[$detail_now[0]['create_uid']] = $power;
-//						}
-					}
-					MessageDetail::save($input_d);
-				}
-			} else {
-				foreach ($r['statusbox'] as $item) {
-					$data_send = MessageSend::getInfo($item['mobile'],$item['taskid']);
-					if ($data_send) {
-						$input = array();
-						$input['message_sid'] = $data_send['message_sid'];
-						$input['status'] = $item['status'];
-						$input['return_time'] = strtotime($item['receivetime']);
-						$input['errorcode'] = $item['errorcode'];
-						$input['extno'] = is_array($item['extno'])?'':$item['extno'];
-						MessageSend::save($input);
-						$input_d = array();
-						$input_d['message_did'] = $data_send['message_did'];
-						$input_d['return_time'] = time();
-						if ($item['status'] == 10) {
-							$input_d['status'] = 3;
-						} else {
-							$input_d['status'] = 4;
-//							$detail_now = DB::select('select content,create_uid from yii2_message_detail where message_did ='.$data_send['message_did']);
-//							$message_count = mb_strlen($detail_now[0]['content']);
-//							$power = 1;
-//							if ($message_count > 130) {
-//								$power = 3;
-//							} elseif ($message_count > 70) {
-//								$power = 2;
-//							} else {
-//								$power = 1;
-//							}
-//							if (isset($balance_arr[$detail_now[0]['create_uid']])) {
-//								$balance_arr[$detail_now[0]['create_uid']] += $power;
-//							} else {
-//								$balance_arr[$detail_now[0]['create_uid']] = $power;
-//							}
-						}
-						MessageDetail::save($input_d);
-					}
-				}
+		$sql="SELECT message_id,create_time FROM yii2_message_list";
+		$message_id = DB::select($sql);
+		if ($message_id) {
+			foreach ($message_id as $item) {
+				$sql4 = 'UPDATE yii2_message_detail SET create_time = '.$item['create_time'].' WHERE message_id= '.$item['message_id'];
+				DB::update($sql4);
 			}
-//			foreach ($balance_arr as $k=>$v) {
-//				DB::update('update yii2_admin set balance=balance+'.$v.' where uid ='.$k);
-//				$balance_now = DB::select('select balance from yii2_admin where uid ='.$k);
-//				DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$k.'","'.$v.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');
-//			}
 		}
-		return Response::json($r);
+		Response::json(array('true'));
 	}
 
 
