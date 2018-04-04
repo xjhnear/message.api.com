@@ -744,12 +744,12 @@ ON a.message_id = b.message_id";
 			$sql="select a.uid,IFNULL(count,0) as count,IFNULL(count_success,0) as count_success from yii2_admin as a 
 LEFT JOIN 
 (
-select count(*) as count,uid from yii2_message_send where create_time between ".$start." and ".$end." group by uid 
-) as b on a.uid=b.uid 
+select count(*) as count,create_uid as uid from yii2_message_detail where create_time between ".$start." and ".$end." group by create_uid
+) as b on a.uid=b.uid
 LEFT JOIN 
 (
-select count(*) as count_success,uid from yii2_message_send where status=10 and create_time between ".$start." and ".$end." group by uid 
-) as c on a.uid=c.uid 
+select count(*) as count_success,create_uid as uid from yii2_message_detail where status=3 and create_time between ".$start." and ".$end." group by create_uid
+) as c on a.uid=c.uid
 where a.role = 1";
 			$send = DB::select($sql);
 			foreach ($send as $item) {
@@ -791,7 +791,7 @@ where a.role = 1";
 
 			$sql_1 = "update yii2_report b
 INNER JOIN
-(select FROM_UNIXTIME(create_time,'%Y-%m-%d') as c_date,count(*) as count_success,uid from yii2_message_send where status=10 and (create_time between ".$start3." and ".$end.") group by c_date,uid) a
+(select FROM_UNIXTIME(create_time,'%Y-%m-%d') as c_date,count(*) as count_success,create_uid as uid from yii2_message_detail where status=3 and (create_time between ".$start3." and ".$end.") group by c_date,create_uid) a
 ON a.c_date=b.c_date AND a.uid = b.uid
 SET b.success_count = a.count_success
 where UNIX_TIMESTAMP(b.c_date) between ".$start3." and ".$end."";
