@@ -235,15 +235,12 @@ class SystemController extends BaseController
             if (isset($r['statusbox'])) {
                 $balance_arr = array();
                 if (isset($r['statusbox']['mobile'])) {
-                    $data_send = MessageSend::getInfo($r['statusbox']['mobile'],$r['statusbox']['taskid']);
-                    if ($data_send) {
-                        $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES ";
-                        $extno = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
-                        $tmpstr = "'". $r['statusbox']['mobile'] ."','". $r['statusbox']['taskid'] ."','". $r['statusbox']['status'] ."','". strtotime($r['statusbox']['receivetime']) ."','". $r['statusbox']['errorcode'] ."','". $extno ."','". time() ."'";
-                        $sql .= "(".$tmpstr.")";
-                        $sql = substr($sql,0,-1);   //去除最后的逗号
-                        DB::insert($sql);
-                    }
+					$sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES ";
+					$extno = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
+					$tmpstr = "'". $r['statusbox']['mobile'] ."','". $r['statusbox']['taskid'] ."','". $r['statusbox']['status'] ."','". strtotime($r['statusbox']['receivetime']) ."','". $r['statusbox']['errorcode'] ."','". $extno ."','". time() ."'";
+					$sql .= "(".$tmpstr.")";
+					$sql = substr($sql,0,-1);   //去除最后的逗号
+					DB::insert($sql);
                 } else {
                     $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES ";
                     foreach ($r['statusbox'] as $item) {
@@ -277,7 +274,7 @@ SET a.errorcode = b.errorcode,
 a.status = b.status,
 a.extno = b.extno,
 a.return_time = b.retime
-WHERE a.`status`=0 AND b.is_do = 0 AND b.rid <= '.$max_rid;
+WHERE b.is_do = 0 AND b.rid <= '.$max_rid;
 			DB::update($sql2);
 
 			$sql3 = 'UPDATE yii2_message_detail aa
