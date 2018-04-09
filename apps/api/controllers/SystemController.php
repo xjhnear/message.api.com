@@ -692,13 +692,8 @@ WHERE aa.`status`=5';
 		} else {
 			$start = mktime(0,0,0,date("m"),date("d")-4,date("Y"));
 			$end = mktime(0,0,0,date("m"),date("d")-3,date("Y"));
-			$sql="SELECT a.message_id  FROM 
-(SELECT DISTINCT message_id 
-FROM yii2_message_detail WHERE `status`=4 AND is_return = 0) a
-INNER JOIN 
-(SELECT DISTINCT message_id 
-FROM yii2_message_send WHERE create_time<".$end." AND `status`=0) b 
-ON a.message_id = b.message_id";
+			$sql="SELECT DISTINCT message_id
+FROM yii2_message_detail WHERE `status`=4 AND is_return = 0 AND create_time<".$end;
 			$message_id = DB::select($sql);
 			if ($message_id) {
 				foreach ($message_id as $item) {
