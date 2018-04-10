@@ -285,7 +285,7 @@ ON a.task_id = b.taskid AND a.phonenumber=b.phone
 WHERE b.is_do = 0 AND b.rid <= '.$max_rid.' ) bb
 ON aa.message_did = bb.message_did
 SET aa.status = case when (bb.status<>10) then 4 else 3 end
-WHERE aa.`status`=5';
+';
 			DB::update($sql3);
 
 			$sql4 = 'UPDATE yii2_message_return SET is_do = 1 WHERE is_do = 0 AND rid <= '.$max_rid;
