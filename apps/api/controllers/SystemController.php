@@ -710,7 +710,7 @@ FROM yii2_message_detail WHERE `status`=4 AND is_return = 0 AND create_time<".$e
 						$create_uid = $item_c['create_uid'];
 						$balance += $item_c['num'] * $power;
 					}
-					DB::update('update yii2_message_detail set is_return=1 where status=4 AND is_return = 0 and message_id ='.$item['message_id']);
+					DB::update('update yii2_message_detail set is_return=1 where message_id ='.$item['message_id']);
 					DB::update('update yii2_admin set balance=balance+'.$balance.' where uid ='.$create_uid);
 					$balance_now = DB::select('select balance from yii2_admin where uid ='.$create_uid);
 					DB::insert('INSERT INTO yii2_account_detail (uid,change_count,change_type,balance,remark,op_uid,create_time) VALUES ("'.$create_uid.'","'.$balance.'","1","'.$balance_now[0]['balance'].'","返还","0","'.time().'")');

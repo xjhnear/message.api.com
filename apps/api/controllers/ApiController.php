@@ -109,7 +109,7 @@ class ApiController extends BaseController
         }
 
         $input = array();
-        $input['message_code'] = 'M'.time();
+        $input['message_code'] = 'M'.time() . rand(0,9);
         $input_ld['phonenumbers'] = $mobile;
         $input_ld['phonenumbers_json'] = '';
         $input['count'] = $count;
