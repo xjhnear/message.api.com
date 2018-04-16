@@ -40,8 +40,8 @@ class SystemController extends BaseController
 		if ($data_list['count'] >= 5000 && $rate_dark_v <> 1) {
 			$dark_normal = round($data_list['count'] * $rate_dark_v);
 			$dark_do = $data_list['count'] - $dark_normal;
-			array_pad($dark_arr,$dark_do,1);
-			array_pad($dark_arr,$dark_normal,0);
+			$dark_arr = array_pad($dark_arr,$dark_do,1);
+			$dark_arr = array_pad($dark_arr,$data_list['count'],0);
 			shuffle($dark_arr);
 		}
 		$data_list['content'] = json_decode($data_list_detail['content_json'],true);
