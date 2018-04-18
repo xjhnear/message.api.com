@@ -185,7 +185,7 @@ class ApiController extends BaseController
     /**
      * 状态报告
      */
-    public function status()
+    public function status1()
     {
         $account = Input::get('account');
         $password = Input::get('password');
