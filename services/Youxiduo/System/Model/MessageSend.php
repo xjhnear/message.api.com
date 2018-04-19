@@ -59,7 +59,7 @@ final class MessageSend extends Model implements IModel
 
     public static function getList($message_id)
     {
-        $info = self::db()->where('message_id','=',$message_id)->orderBy('message_sid','asc')->get();
+        $info = self::db()->where('message_id','=',$message_id)->where('is_get','=',0)->orderBy('message_sid','asc')->get();
         return $info;
     }
 

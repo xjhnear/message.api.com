@@ -273,7 +273,8 @@ ON a.task_id = b.taskid AND a.phonenumber=b.phone
 SET a.errorcode = b.errorcode,
 a.status = b.status,
 a.extno = b.extno,
-a.return_time = b.retime
+a.return_time = b.retime,
+a.is_get = 0
 WHERE b.is_do = 0 AND b.rid <= '.$max_rid;
 			DB::update($sql2);
 
@@ -308,6 +309,7 @@ SET aa.status = case when (bb.status<>10) then 4 else 3 end
 
 			$sql2 = 'UPDATE yii2_message_send a
 SET a.status = 10,
+a.is_get = 0,
 a.return_time = '.time().'
 WHERE a.`status`=0 AND a.is_dark = 1 AND a.message_sid <= '.$max_sid.' AND a.message_sid >= '.$min_sid;
 			DB::update($sql2);
