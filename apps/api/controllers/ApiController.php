@@ -185,8 +185,12 @@ class ApiController extends BaseController
     /**
      * 状态报告
      */
-    public function status1()
+    public function status()
     {
+        $r['error'] = 100;
+        $r['remark'] = '当前没有待查询的短信状态';
+        return Response::json($r);
+        
         $account = Input::get('account');
         $password = Input::get('password');
         if ($account=="" || $password=="") {
