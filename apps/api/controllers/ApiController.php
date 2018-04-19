@@ -213,12 +213,19 @@ class ApiController extends BaseController
             return Response::json($r);
         }
         $status_arr = $status = array();
+        $message_id_arr = array();
         foreach ($data_list as $item) {
             $status_arr = array();
+            $message_id_arr[] = $item['message_sid'];
             $status_arr['phonenumber'] = $item['phonenumber'];
             $status_arr['status'] = $item['status'];
             $status[] = $status_arr;
         }
+        if (count($message_id_arr) > 0 ) {
+            $sql = 'UPDATE yii2_message_send SET is_get = 1 WHERE message_sid in ('.implode(',',$message_id_arr).') ';
+            DB::update($sql);
+        }
+
         $out['error'] = 0;
         $out['message'] = 'success';
         $out['status'] = $status;
