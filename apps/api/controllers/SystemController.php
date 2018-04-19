@@ -252,6 +252,7 @@ class SystemController extends BaseController
                     DB::insert($sql);
                 }
             }
+			sleep(3);
         }
         return Response::json($r);
 
