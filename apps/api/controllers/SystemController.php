@@ -225,8 +225,13 @@ class SystemController extends BaseController
      */
     public function getstatus()
     {
+		$channel_url_arr = array();
         $channel_list = Channel::getList();
         foreach ($channel_list as $channel_item) {
+			if (in_array($channel_item['url'],$channel_url_arr)) {
+				continue;
+			}
+			$channel_url_arr[] = $channel_item['url'];
             $params = array();
             $params = $this->make_params($params, 'status', $channel_item);
             $r = $this->unifySend($params['arr'], $params['xml'], $channel_item);
@@ -252,7 +257,7 @@ class SystemController extends BaseController
                     DB::insert($sql);
                 }
             }
-			sleep(3);
+			sleep(2);
         }
         return Response::json($r);
 
