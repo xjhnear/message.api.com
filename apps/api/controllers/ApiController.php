@@ -251,25 +251,31 @@ class ApiController extends BaseController
             $r['remark'] = '用户名或密码错误';
             return Response::json($r);
         }
-        $mobile = Input::get('mobile');
-        if ($mobile=="") {
-            $r['error'] = 100;
-            $r['remark'] = '手机号码不能为空';
-            return Response::json($r);
-        }
-        $data_list = MessageCall::getList($mobile,$info['uid']);
+//        $mobile = Input::get('mobile');
+//        if ($mobile=="") {
+//            $r['error'] = 100;
+//            $r['remark'] = '手机号码不能为空';
+//            return Response::json($r);
+//        }
+        $data_list = MessageCall::getList($info['uid']);
         if (!$data_list) {
-            $r['error'] = 100;
+            $r['error'] = 0;
             $r['remark'] = '当前没有待查询的上行信息';
             return Response::json($r);
         }
         $call = $call_arr = array();
+        $message_id_arr = array();
         foreach ($data_list as $item) {
             $call_arr = array();
+            $message_id_arr[] = $item['message_cid'];
             $call_arr['mobile'] = $item['phonenumber'];
             $call_arr['content'] = $item['content'];
             $call_arr['receivetime'] = date('Y-m-d H:i:s', $item['return_time']);
             $call[] = $call_arr;
+        }
+        if (count($message_id_arr) > 0 ) {
+            $sql = 'UPDATE yii2_message_call SET is_get = 1 WHERE message_cid in ('.implode(',',$message_id_arr).') ';
+            DB::update($sql);
         }
         $out['error'] = 0;
         $out['message'] = 'success';
