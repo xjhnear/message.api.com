@@ -244,7 +244,7 @@ class SystemController extends BaseController
 					$extno = is_array($r['statusbox']['extno'])?'':$r['statusbox']['extno'];
 					$tmpstr = "'". $r['statusbox']['mobile'] ."','". $r['statusbox']['taskid'] ."','". $r['statusbox']['status'] ."','". strtotime($r['statusbox']['receivetime']) ."','". $r['statusbox']['errorcode'] ."','". $extno ."','". time() ."'";
 					$sql .= "(".$tmpstr.")";
-					$sql = substr($sql,0,-1);   //去除最后的逗号
+//					$sql = substr($sql,0,-1);   //去除最后的逗号
 					DB::insert($sql);
                 } else {
                     $sql="INSERT INTO yii2_message_return (phone,taskid,status,retime,errorcode,extno,create_time) VALUES ";
