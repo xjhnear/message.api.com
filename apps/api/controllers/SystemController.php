@@ -504,7 +504,7 @@ WHERE aa.`status`=5';
                 switch ($action) {
                     case 'sms':
                         $params_new['Phones'] = $params['mobile'];
-                        $params_new['Content'] = iconv("UTF-8","GB2312",$params['content']);
+                        $params_new['Content'] = iconv("UTF-8","GB2312//IGNORE",$params['content']);
                         $params_new['Channel'] = 1;
                         $params_new['SendTime'] = date('YmdHis', $params['sendTime']);
                         break;
